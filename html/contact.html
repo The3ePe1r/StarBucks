@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="icon" type="image/png" href="../images/image.png">
+    <title> ارتباط با ما| StarBuacks</title>
+</head>
+<body>
+    
+<header id="header">
+  <div class="header-inner" style="background: linear-gradient(90deg, rgba(0, 0, 0, 0.5), rgb(43, 43, 43))">
+    <div class="logo">
+        <a href="home.html">
+            <img src="../images/image.png" alt="لوگو استار باکس">
+        </a>
+    </div>
+    <div class="search-box">
+      <input type="text" id="searchInput" placeholder="جستوجوی محصولات">
+      <div id="searchResults" class="search-results">
+      </div>
+    </div>
+    <nav id="buttons">
+      <a href="home.html">خانه</a>
+      <a href="about.html">درباره</a>
+      <a href="products.html">خدمات</a>
+      <a href="contact.html">تماس</a>
+    </nav>
+  </div>
+</header>
+
+    <main class="contact-page">
+        <section class="contact-hero" >
+            <div class="hero-image"></div>
+            <div class="hero-overlay"></div>
+            <div class="hero-content">
+                <h1>تماس با ما</h1>
+            </div>
+        </section>
+
+        <section class="contact-info-form">
+            <div class="container">
+                <div class="contact-info">
+                    <h2>با ما در ارتباط باشید</h2>
+                    <p>ما همیشه آماده شنیدن صدای شما هستیم. از طریق راه‌های زیر می‌توانید با ما تماس بگیرید:</p>
+
+                    <div class="info-item">
+                        <img src="../images/phone.svg" alt="Phone Icon">
+                        <div>
+                            <h3>تلفن</h3>
+                            <a href="tel:09123456789">0912-3456789</a>
+                        </div>
+                    </div>
+
+                    <div class="info-item">
+                        <img src="../images/email.svg" alt="Email Icon">
+                        <div>
+                            <h3>ایمیل</h3>
+                            <a href="mailto:info@starbucks.com">info@starbucks.com</a>
+                        </div>
+                    </div>
+
+                    <div class="info-item">
+                        <img src="../images/location.svg" alt="Location Icon">
+                        <div>
+                            <h3>آدرس</h3>
+                            <p>تهران، خیابان شریعتی، بالاتر از پل صدر، پلاک ۱۲۳</p> 
+                        </div>
+                    </div>
+
+                    <div class="info-item">
+                         <img src="../images/clock.svg" alt="Clock Icon">
+                         <div>
+                            <h3>ساعات کاری</h3>
+                            <p>شنبه تا پنجشنبه: ۸:۰۰ صبح تا ۱۰:۰۰ شب<br>جمعه‌ها: ۱۰:۰۰ صبح تا ۹:۰۰ شب</p>
+                         </div>
+                    </div>
+
+                    <div class="social-links">
+                        <h3>ما را دنبال کنید</h3>
+                        <a href="#"><img src="../images/instagram.svg" alt="Instagram"></a>
+                        <a href="#"><img src="../images/youtube.svg" alt="Youtube"></a>
+                        <a href="#"><img src="../images/telegram.svg" alt="Telegram"></a>
+                    </div>
+                </div>
+
+                <div class="contact-form">
+                    <h2>پیام خود را ارسال کنید</h2>
+                    <form id="contactForm">
+                        <div class="form-group">
+                            <label for="name">:نام شما</label>
+                            <input type="text" id="name" name="name" required placeholder="نام و نام خانوادگی">
+                        </div>
+                        <div class="form-group">
+                            <label for="email">:ایمیل شما</label>
+                            <input type="email" id="email" name="email" required placeholder="example@domain.com">
+                        </div>
+                        <div class="form-group">
+                            <label for="subject">:موضوع</label>
+                            <input type="text" id="subject" name="subject" placeholder="موضوع پیام">
+                        </div>
+                        <div class="form-group">
+                            <label for="message">:پیام شما</label>
+                            <textarea id="message" name="message" rows="6" required placeholder="متن پیام خود را اینجا بنویسید..."></textarea>
+                        </div>
+                        <button type="submit" class="submit-button">ارسال پیام</button>
+                    </form>
+                    <p id="formMessage" class="form-message"></p>
+                </div>
+            </div>
+        </section>
+
+        <section class="map-section">
+            <div class="container">
+                 <h2>موقعیت ما</h2>
+                 <div id="mapPlaceholder" style="width: 100%; height: 400px; background-color: #eee; border-radius: 15px; display: flex; justify-content: center; align-items: center; color: #666;">
+                     <iframe src="https://neshan.org/maps/places/_bvZv02x4wCz#c35.739-51.376-19z-0p" width="100%" height="100%" style="border:0; border-radius: 15px;" allowfullscreen="" loading="lazy"></iframe> 
+                 </div>
+            </div>
+        </section>
+    </main>
+
+<footer class="footer">
+    <div class="footer-content">
+        <div class="footer-logo">
+            <img src="../images/image.png" alt="لوگوی استارباکس">
+            <h1>استارباکس</h1>
+            <p class="tagline">قهوه، فراتر از یک نوشیدنی...</p>
+        </div>
+        <div class="footer-contact">
+            <h2>تماس با ما</h2>
+            <div class="contact-item">
+                <img src="../images/phone.svg" alt="شماره تماس">
+                <a href="tel:09123456789">0912-3456789</a>
+            </div>
+            <div class="contact-item">
+                <img src="../images/email.svg" alt="ایمیل">
+                <a href="mailto:info@starbucks.com">info@starbucks.com</a>
+            </div>
+        </div>
+
+        <div class="footer-social">
+            <h2>ما را دنبال کنید</h2>
+            <ul class="social-icons">
+                <li><a href="#"><img src="../images/telegram.svg" alt="تلگرام"></a></li>
+                <li><a href="#"><img src="../images/instagram.svg" alt="اینستاگرام"></a></li>
+                <li><a href="#"><img src="../images/youtube.svg" alt="یوتیوب"></a></li>
+                <li><a href="#"><img src="../images/whatsapp.svg" alt="واتساپ"></a></li>
+            </ul>
+        </div>
+        <div class="perms">
+            <h2>مجوز ها</h2>
+            <a href="trustseal.enamad.ir/?id=448759&code=9W3fhatiIliXLE8QdR7PBHBcCrCcAeWt"><img src="../images/enamad.png" alt="اینماد"></a>
+            <a href=""><img src="../images/samandehi.png" alt="ساماندهی"></a>
+        </div>
+    </div>
+
+    <div class="copyright">
+        <p>&copy; 2026 استارباکس ایران. کلیه حقوق محفوظ است.</p>
+    </div>
+</footer>
+
+<script src="../JS/script.js"></script>
+
+</body>
+</html>

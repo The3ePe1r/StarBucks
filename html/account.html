@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="icon" type="image/png" href="../images/image.png">
+    <title>استار باکس | StarBuacks</title>
+</head>
+<body>
+
+<header id="header">
+  <div class="header-inner">
+    <div class="logo">
+        <a href="home.html">
+            <img src="../images/image.png" alt="لوگو استار باکس">
+        </a>
+    </div>
+    <div class="search-box">
+      <input type="text" id="searchInput" placeholder="جستوجوی محصولات">
+      <div id="searchResults" class="search-results">
+      </div>
+    </div>
+    <nav id="buttons">
+      <a href="home.html">خانه</a>
+      <a href="about.html">درباره</a>
+      <a href="products.html">خدمات</a>
+      <a href="contact.html">تماس</a>
+    </nav>
+  </div>
+</header> 
+    
+
+    <main class="auth-page-wrapper"> <!-- Using the same wrapper for layout consistency -->
+        <aside class="sidebar-menu">
+            <h3>حساب کاربری من</h3>
+            <ul>
+                <li><a href="#user-info" class="active-menu-item" data-tab="user-info">اطلاعات کاربری</a></li>
+                <li><a href="#change-password" data-tab="change-password">تغییر رمز عبور</a></li>
+                <li><a href="#order-history" data-tab="order-history">تاریخچه سفارشات</a></li>
+                <li><a href="#settings" data-tab="settings">تنظیمات</a></li>
+                <li><a href="#" id="logoutLink">خروج از حساب</a></li>
+            </ul>
+        </aside>
+
+        <section class="account-content">
+            <!-- User Info Section -->
+            <div id="user-info" class="account-tab active">
+                <h2>اطلاعات کاربری</h2>
+                <div class="user-details">
+                    <div class="detail-item">
+                        <label>نام:</label>
+                        <span id="profileName"></span> <!-- Empty span to be filled by JS -->
+                    </div>
+                    <div class="detail-item">
+                        <label>ایمیل:</label>
+                        <span id="profileEmail"></span> <!-- Empty span to be filled by JS -->
+                    </div>
+                    <!-- Add more info as needed -->
+                </div>
+            </div>
+
+            <!-- Change Password Section -->
+            <div id="change-password" class="account-tab">
+                <h2>تغییر رمز عبور</h2>
+                <form id="changePasswordForm" class="account-form">
+                    <div class="form-group">
+                        <input type="password" id="currentPassword" placeholder="رمز عبور فعلی" required>
+                        <label for="currentPassword">رمز عبور فعلی</label>
+                    </div>
+                    <div class="form-group">
+                        <input type="password" id="newPassword" placeholder="رمز عبور جدید" required>
+                        <label for="newPassword">رمز عبور جدید</label>
+                    </div>
+                    <div class="form-group">
+                        <input type="password" id="confirmNewPassword" placeholder="تکرار رمز عبور" required>
+                        <label for="confirmNewPassword">تکرار رمز عبور</label>
+                    </div>
+                    <button type="submit" class="btn auth-button">تغییر رمز عبور</button>
+                </form>
+            </div>
+
+            <div id="order-history" class="account-tab">
+                <h2>تاریخچه سفارشات</h2>
+                <div class="order-history-table-container"> 
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>محصول</th>
+                                <th>تاریخ سفارش</th>
+                                <th>قیمت</th>
+                                <th>وضعیت</th>
+                            </tr>
+                        </thead>
+                        <tbody id="orderHistoryBody">
+                        </tbody>
+                    </table>
+                </div>
+                <p id="noOrdersMessage" style="display: none;">شما هنوز سفارشی ثبت نکرده‌اید.</p>
+                <div id="clearCartButton">پاک کردن سبد خرید</div>
+            </div>
+
+
+
+            <div id="settings" class="account-tab">
+                <h2>تنظیمات</h2>
+                <p>تنظیمات حساب کاربری شما در اینجا قرار می‌گیرد.</p>
+            </div>
+        </section>
+    </main>
+
+<footer class="footer">
+    <div class="footer-content">
+        <div class="footer-logo">
+            <img src="../images/image.png" alt="لوگوی استارباکس">
+            <h1>استارباکس</h1>
+            <p class="tagline">قهوه، فراتر از یک نوشیدنی...</p>
+        </div>
+        <div class="footer-contact">
+            <h2>تماس با ما</h2>
+            <div class="contact-item">
+                <img src="../images/phone.svg" alt="شماره تماس">
+                <a href="tel:09123456789">0912-3456789</a>
+            </div>
+            <div class="contact-item">
+                <img src="../images/email.svg" alt="ایمیل">
+                <a href="mailto:info@starbucks.com">info@starbucks.com</a>
+            </div>
+        </div>
+
+        <div class="footer-social">
+            <h2>ما را دنبال کنید</h2>
+            <ul class="social-icons">
+                <li><a href="#"><img src="../images/telegram.svg" alt="تلگرام"></a></li>
+                <li><a href="#"><img src="../images/instagram.svg" alt="اینستاگرام"></a></li>
+                <li><a href="#"><img src="../images/youtube.svg" alt="یوتیوب"></a></li>
+                <li><a href="#"><img src="../images/whatsapp.svg" alt="واتساپ"></a></li>
+            </ul>
+        </div>
+        <div class="perms">
+            <h2>مجوز ها</h2>
+            <a href="trustseal.enamad.ir/?id=448759&code=9W3fhatiIliXLE8QdR7PBHBcCrCcAeWt"><img src="../images/enamad.png" alt="اینماد"></a>
+            <a href=""><img src="../images/samandehi.png" alt="ساماندهی"></a>
+        </div>
+    </div>
+
+    <div class="copyright">
+        <p>&copy; 2026 استارباکس ایران. کلیه حقوق محفوظ است.</p>
+    </div>
+</footer>
+
+<script src="../JS/script.js"></script>
+
+</body>
+</html>
