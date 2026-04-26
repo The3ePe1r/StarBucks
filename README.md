@@ -121,7 +121,7 @@ Need to replace placeholder images? Drop your own `.png` or `.webp` files into t
 
 | 🖥️ Desktop View | 📱 Mobile View |
 |-----------------|----------------|
-| ![Desktop](windows-shot.png) | ![Mobile](android-shot.png) |
+| ![Desktop](images/windows-shot.png) | ![Mobile](images/android-shot.png) |
 
 *(Add your real screenshots in the root or a `screenshots/` folder and reference them here.)*
 
