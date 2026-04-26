@@ -175,10 +175,6 @@ Distributed under the **MIT License**. See `LICENSE` for more information.
 
 ### Made with ❤️ · ☕ · and a lot of code
 
-<br />
-<img src="https://media.giphy.com/media/xT39D7ubkIUIrgX7JS/giphy.gif" width="150" />
-<br />
-
 **[⬆ Back to top](#-Starbucks-Coffee-Webpage)**
 
 </div>
