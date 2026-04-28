@@ -733,18 +733,14 @@ if (window.location.pathname.includes('account.html') || document.body.id === 'a
     document.addEventListener('DOMContentLoaded', loadUserProfile);
 }
 
-
-
-
 // --- Add to Cart functionality ---
 const buyButtons = document.querySelectorAll('.buy-button');
-//let productside = document.getElementsByClassName("productsidebar");
 
 if (buyButtons.length > 0) {
     buyButtons.forEach(button => {
         button.addEventListener('click', function(event) {
             event.preventDefault();
-        //    productside.style.left = "0px";
+
 
             const productName = this.getAttribute('data-product-name');
             const productPrice = this.getAttribute('data-product-price');
@@ -775,14 +771,13 @@ if (buyButtons.length > 0) {
             const orderData = {
                 productName: product.name,
                 price: product.price,
-                orderDate: new Date().toLocaleDateString('fa-IR'), // Persian date format
+                orderDate: new Date().toLocaleDateString('fa-IR'),
                 status: 'در حال پردازش'
             };
             orders.push(orderData);
             localStorage.setItem('userOrders', JSON.stringify(orders));
             alert(`${product.name} به سبد خرید اضافه شد!`);
-            
-            //window.location.href = 'account.html';
+            window.location.href = 'account.html';
         });
     });
         
@@ -791,14 +786,7 @@ if (buyButtons.length > 0) {
      console.warn("Buy buttons not found. Add to Cart functionality might not work.");
 }
 
-
-
-
-
 // --- End of Direct Clear Cart Logic ---
-
-
-
 
 function displayOrders() {
     const ordersString = localStorage.getItem('userOrders');
@@ -836,7 +824,7 @@ function displayOrders() {
         });
     } else {
         if (noOrdersMessage) {
-            noOrdersMessage.style.display = 'block'; // Show message if no orders
+            noOrdersMessage.style.display = 'block'; 
         }
     }
 }
@@ -866,12 +854,10 @@ if (window.location.pathname.includes('account.html') || document.body.id === 'a
     if (sidebarLinks.length > 0 && accountTabs.length > 0) {
         sidebarLinks.forEach(link => {
             link.addEventListener('click', function(event) {
-                // Prevent default link behavior for navigation within the account page
                 if (this.id !== 'logoutLink' && this.getAttribute('href') !== '#' && this.getAttribute('href')) {
                      event.preventDefault();
                 }
 
-                // Handle Logout specifically
                 if (this.id === 'logoutLink') {
                     localStorage.removeItem('isLoggedIn');
                     localStorage.removeItem('loggedInUsername');
@@ -881,7 +867,6 @@ if (window.location.pathname.includes('account.html') || document.body.id === 'a
                     return;
                 }
 
-                // Handle navigation between account sections
                 sidebarLinks.forEach(item => item.classList.remove('active-menu-item'));
                 this.classList.add('active-menu-item');
 
@@ -891,7 +876,6 @@ if (window.location.pathname.includes('account.html') || document.body.id === 'a
                 const targetTab = document.getElementById(targetTabId);
                 if (targetTab) {
                     targetTab.classList.add('active');
-                    // If we just opened the order history tab, load the orders
                     if (targetTabId === 'order-history') {
                         displayOrders();
                     }
@@ -899,7 +883,6 @@ if (window.location.pathname.includes('account.html') || document.body.id === 'a
             });
         });
 
-        // Activate the first menu item by default if no item is active
         let activeMenuItemFound = false;
         sidebarLinks.forEach(link => {
             if (link.classList.contains('active-menu-item')) {
@@ -910,7 +893,7 @@ if (window.location.pathname.includes('account.html') || document.body.id === 'a
         if (!activeMenuItemFound && sidebarLinks.length > 0) {
             const firstSidebarLink = sidebarLinks[0];
             if (firstSidebarLink && firstSidebarLink.id !== 'logoutLink') {
-                firstSidebarLink.click(); // Simulate a click to activate the first item and show its content
+                firstSidebarLink.click(); 
             }
         }
     } else {
