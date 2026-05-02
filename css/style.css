@@ -1825,13 +1825,13 @@ nav a:hover {
 }
 
 .services-grid {
-    display: flexbox;
+    display: grid;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     gap: 40px;
     max-width: 1140px;
     margin: 0 auto;
     padding: 0 20px; 
-
+    
 }
 
 .service-card {
@@ -1841,6 +1841,7 @@ nav a:hover {
     box-shadow: 0 5px 20px rgba(0,0,0,.08);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     display: flex;
+    margin-top: 20px;
     flex-direction: column; 
     align-items: center;
     text-align: center;
@@ -3054,4 +3055,13 @@ nav a:hover {
     .toggle .ghost { 
         display: none; 
     } 
+}
+
+
+@media (max-width: 768px) {
+    .services-grid {
+        display: flex;    
+        flex-direction: column;
+        gap: 40px;         
+    }
 }
