@@ -2221,118 +2221,146 @@ nav a:hover {
 
 /* Footer */
 .footer {
-    display: block; 
-    text-align: center; 
-    width: 100%; background: #37694c; 
+    display: block;
+    text-align: center;
+    width: 100%;
+    background: #37694c;
     color: #ffffff;
-    padding: 30px 20px; box-sizing: border-box;
+    padding: 30px 20px;
+    box-sizing: border-box;
 }
 .footer-content {
-    display: flex; 
-    justify-content: space-around; 
-    width: 100%; 
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
     max-width: 1200px;
-    margin: 0 auto 30px auto; 
-    flex-wrap: wrap;
-}
-.footer h1, .footer h2 { 
-    font-family: 'Digi Almas', sans-serif; 
-    font-weight: bold; 
-    color: #f7e099; 
-    margin-top: 0; 
-    margin-bottom: 15px; 
-}
-.footer h1 { 
-    font-size: 32px; 
-    color: #ffffff; 
-}
-.footer p { 
-    font-size: 16px; 
-    line-height: 0.5; 
-    margin: 0; 
-}
-.footer-logo { 
-    width: 280px; 
-    margin: 0 15px; 
-    text-align: center;
-}
-.footer-logo img { 
-    width: 75px; 
-    height: 75px; 
-    margin-bottom: 10px; 
-    display: block; 
-    margin-left: auto; 
-    margin-right: auto; 
-}
-.footer-logo h1 { 
-    display: block; 
-    margin-left: auto; 
-    margin-right: auto; 
-}
-.footer-logo .tagline { 
-    font-style: italic; 
-    font-size: 14px; 
-    color: #e0e0e0; 
-    display: block; 
-    margin-left: auto; 
-    margin-right: auto; 
-}
-.footer-contact{ 
-    width: 280px; 
-    margin: 0 15px; 
-    text-align: center; 
+    margin: 0 auto 30px auto;
+    padding: 0 15px;
+    flex-wrap: nowrap;      
+    overflow-x: auto; 
 }
 
-.contact-item a{
+.footer-content::-webkit-scrollbar {
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
+    background: transparent !important;
+}
+
+.footer-logo,
+.footer-contact,
+.ticket,
+.footer-social,
+.perms {
+    flex: 1 1 0;              
+    min-width: 160px;          
+    margin: 0 12px;
+    text-align: center;
+    box-sizing: border-box;
+}
+
+.footer h1, .footer h2 {
+    font-family: 'Digi Almas', sans-serif;
+    font-weight: bold;
+    color: #f7e099;
+    margin-top: 0;
+    margin-bottom: 15px;
+}
+
+.footer h1 {
+    font-size: 32px;
+    color: #ffffff;
+}
+
+.footer p {
+    font-size: 16px;
+    line-height: 1.5;
+    margin: 0;
+}
+
+.footer-logo img {
+    width: 75px;
+    height: 75px;
+    margin-bottom: 10px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.footer-logo .tagline {
+    font-style: italic;
+    font-size: 14px;
+    color: #e0e0e0;
+}
+
+.contact-item a,
+.ticket a {
     color: white;
-    font-size: 16px; 
+    font-size: 16px;
     text-decoration: none;
 }
-.footer-contact .contact-item { 
-    display: flex; 
-    align-items: center; 
-    justify-content: center; 
-    margin-bottom: 10px; 
+
+.footer-contact .contact-item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 10px;
 }
-.footer-contact .contact-item img { 
-    width: 25px; 
+
+.footer-contact .contact-item img {
+    width: 25px;
     height: 25px;
-    margin-left: 10px; 
+    margin-left: 10px;
 }
-.footer-social{ 
-    width: 280px; 
-    margin: 0 15px; 
-    text-align: center; 
+
+.footer-social .social-icons {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    justify-content: center;
 }
-.footer-social .social-icons { 
-    list-style: none; 
-    padding: 0; 
-    margin: 0; 
-    display: flex; 
-    justify-content: center; 
+
+.footer-social .social-icons li {
+    margin: 0 8px;
 }
-.footer-social .social-icons li { 
-    margin: 0 8px; 
+
+.footer-social .social-icons li a img {
+    display: block;
+    width: 35px;
+    height: 35px;
+    transition: transform 0.2s ease-in-out;
 }
-.footer-social .social-icons li a img { 
-    display: block; 
-    width: 35px; 
-    height: 35px; 
-    transition: transform 0.2s ease-in-out; 
+
+.footer-social .social-icons li a img:hover {
+    transform: scale(1.1);
 }
-.footer-social .social-icons li a img:hover { 
-    transform: scale(1.1); 
+
+.perms img {
+    width: 70px;      
+    height: auto;       
+    margin: 0 5px;   
+    vertical-align: middle;
 }
-.perms a img{ 
-    width: 100px; 
+
+.ticket a {
+    display: inline-block;
+    font-size: 18px;
+    transition: transform 0.2s ease-in-out;
 }
-.copyright { 
-    width: 100%; 
-    text-align: center; 
-    padding-top: 20px; 
-    border-top: 1px solid rgba(255, 255, 255, 0.2); 
-    margin-top: 20px; 
-    font-size: 14px; 
+
+
+.ticket a:hover {
+    transform: scale(1.1);
+}
+
+.copyright {
+    width: 100%;
+    text-align: center;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    margin-top: 20px;
+    font-size: 14px;
 }
 
 .product-container{ 

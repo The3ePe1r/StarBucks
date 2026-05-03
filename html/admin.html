@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>پنل مدیریت تیکت‌ها</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f0f2f5;
+            padding: 20px;
+            direction: rtl;
+        }
+        .admin-wrapper { max-width: 1000px; margin: 20px auto; }
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: white;
+            padding: 20px 30px;
+            border-radius: 16px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+            margin-bottom: 25px;
+        }
+        .admin-header h2 { font-size: 26px; color: #2c3e50; }
+        .header-actions { display: flex; gap: 10px; }
+        .btn {
+            border: none;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+            font-size: 14px;
+        }
+        .btn-danger { background: #e74c3c; color: white; }
+        .btn-danger:hover { background: #c0392b; }
+        .btn-warning { background: #f39c12; color: white; }
+        .btn-warning:hover { background: #e67e22; }
+        .ticket-admin-card {
+            background: white;
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+            transition: 0.2s;
+        }
+        .ticket-admin-card:hover { box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        .admin-ticket-header {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .ticket-meta { display: flex; align-items: center; gap: 15px; flex-wrap: wrap; }
+        .ticket-id-badge { background: #ecf0f1; padding: 5px 12px; border-radius: 8px; font-family: monospace; font-weight: bold; }
+        .priority-badge { padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: bold; background: #ecf0f1; }
+        .status-select { padding: 8px 12px; border-radius: 10px; border: 2px solid #e0e6ed; font-weight: bold; cursor: pointer; }
+        .customer-info { color: #2c3e50; margin: 10px 0; font-size: 15px; }
+        .message-content { background: #f8f9fa; border-radius: 12px; padding: 15px; margin: 15px 0; line-height: 1.6; }
+        .replies-box { background: #f4f6f8; border-radius: 12px; padding: 15px; margin: 15px 0; }
+        .reply-item {
+            background: white;
+            border-radius: 10px;
+            padding: 10px 15px;
+            margin: 8px 0;
+            border-right: 4px solid #3498db;
+        }
+        .reply-item.admin-reply { border-right-color: #e74c3c; background: #fdf2f2; }
+        .admin-reply-form { display: flex; gap: 10px; margin-top: 15px; align-items: flex-start; }
+        .admin-reply-form textarea {
+            flex: 1;
+            padding: 12px;
+            border-radius: 12px;
+            border: 2px solid #e0e6ed;
+            resize: vertical;
+            font-family: inherit;
+        }
+        .admin-reply-form button {
+            background: #2ecc71;
+            border: none;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 12px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .empty-state { text-align: center; padding: 60px 20px; color: #7f8c8d; font-size: 18px; }
+    </style>
+</head>
+<body>
+    <div class="admin-wrapper">
+        <div class="admin-header">
+            <h2>🛡️ پنل مدیریت تیکت‌ها</h2>
+            <div class="header-actions">
+                <button class="btn btn-warning" onclick="deleteAllTickets()">حذف همه تیکت‌ها</button>
+                <button class="btn btn-danger" onclick="logout()">خروج</button>
+            </div>
+        </div>
+        <div id="ticketsContainer"></div>
+    </div>
+
+    <script>
+
+    </script>
+</body>
+</html>

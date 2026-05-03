@@ -146,30 +146,42 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 
-
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     const contactForm = document.getElementById('contactForm');
     const formMessage = document.getElementById('formMessage');
 
     if (contactForm) {
-        contactForm.addEventListener('submit', function(event) {
-            event.preventDefault(); 
+        contactForm.addEventListener('submit', function (event) {
+            event.preventDefault();
 
             const formData = new FormData(contactForm);
-            const name = formData.get('name');
-            const email = formData.get('email');
-            const subject = formData.get('subject');
-            const message = formData.get('message');
+            const name = formData.get('name').trim();
+            const email = formData.get('email').trim();
+            const subject = formData.get('subject').trim();
+            const message = formData.get('message').trim();
 
+            // بررسی فیلدهای ضروری
             if (!name || !email || !message) {
                 showMessage('لطفاً تمام فیلدهای ضروری را پر کنید.', 'error');
                 return;
             }
 
-            console.log('Form Data Submitted:', { name, email, subject, message });
+            // ذخیره‌سازی در localStorage
+            const newMessage = {
+                name: name,
+                email: email,
+                subject: subject || 'بدون موضوع',
+                message: message,
+                date: new Date().toLocaleString('fa-IR')
+            };
+            let allMessages = JSON.parse(localStorage.getItem('contactMessages')) || [];
+            allMessages.push(newMessage);
+            localStorage.setItem('contactMessages', JSON.stringify(allMessages));
 
+            // نمایش پیام موفقیت در همان بخش پایین فرم
             showMessage('پیام شما با موفقیت ارسال شد. ممنون از تماس شما!', 'success');
 
+            // پاک‌سازی فرم
             contactForm.reset();
         });
     }
@@ -177,8 +189,8 @@ document.addEventListener('DOMContentLoaded', function() {
     function showMessage(msg, type) {
         if (formMessage) {
             formMessage.textContent = msg;
-            formMessage.className = `form-message ${type}`; 
-
+            formMessage.className = `form-message ${type}`;
+            // بعد از ۵ ثانیه پیام ناپدید می‌شود (مطابق کد قبلی شما)
             setTimeout(() => {
                 formMessage.textContent = '';
                 formMessage.className = 'form-message';
@@ -186,10 +198,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 });
-
-
-
-
 
 
 
@@ -804,10 +812,10 @@ function displayOrders() {
     const noOrdersMessage = document.getElementById('noOrdersMessage');
 
     if (orderHistoryBody) {
-        orderHistoryBody.innerHTML = ''; // Clear existing rows
+        orderHistoryBody.innerHTML = ''; 
     }
     if (noOrdersMessage) {
-        noOrdersMessage.style.display = 'none'; // Hide message by default
+        noOrdersMessage.style.display = 'none'; 
     }
 
     if (orders.length > 0 && orderHistoryBody) {
@@ -901,4 +909,224 @@ if (window.location.pathname.includes('account.html') || document.body.id === 'a
     }
 }
 
-// --- End of relevant scripts ---
+
+
+        function escapeHtml(text) {
+            const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
+            return String(text).replace(/[&<>"']/g, m => map[m]);
+        }
+
+        function searchTickets(query) {
+            const tickets = JSON.parse(localStorage.getItem('tickets')) || [];
+            const container = document.getElementById('ticketsContainer');
+            if (!query) {
+                container.innerHTML = '<div class="no-ticket">لطفاً یک ایمیل یا شناسه تیکت وارد کنید.</div>';
+                return;
+            }
+            let results;
+            if (query.includes('@')) {
+                results = tickets.filter(t => t.email.toLowerCase() === query.toLowerCase().trim());
+            } else {
+                const idQuery = query.trim().toUpperCase();
+                results = tickets.filter(t => t.id.toUpperCase() === idQuery);
+            }
+            if (results.length === 0) {
+                container.innerHTML = '<div class="no-ticket">هیچ تیکتی با این مشخصات یافت نشد.</div>';
+                return;
+            }
+            container.innerHTML = '';
+            results.slice().reverse().forEach(ticket => {
+                const div = document.createElement('div');
+                div.className = `ticket-card ${ticket.status === 'closed' ? 'closed' : ''}`;
+                div.innerHTML = `
+                    <div class="ticket-header">
+                        <span class="ticket-id">${ticket.id}</span>
+                        <span class="ticket-date">${ticket.date}</span>
+                    </div>
+                    <div class="ticket-subject">${escapeHtml(ticket.subject)}</div>
+                    <div class="ticket-detail">
+                        <p><strong>وضعیت:</strong> <span class="status-badge status-${ticket.status}">${ticket.status === 'open' ? 'باز' : ticket.status === 'in-progress' ? 'در حال بررسی' : 'بسته'}</span></p>
+                        <p><strong>اولویت:</strong> ${escapeHtml(ticket.priority)}</p>
+                        <p><strong>شرح:</strong> ${escapeHtml(ticket.message)}</p>
+                    </div>
+                    <div class="replies-section">
+                        <strong>پاسخ‌ها:</strong>
+                        ${ticket.replies.length === 0 ? '<p>هنوز پاسخی ثبت نشده.</p>' : 
+                          ticket.replies.map(r => `
+                            <div class="reply-bubble ${r.author === 'admin' ? 'admin' : ''}">
+                                <div class="reply-author">${r.author === 'admin' ? 'پشتیبانی' : 'شما'}</div>
+                                <div>${escapeHtml(r.text)}</div>
+                                <div class="reply-date">${r.date}</div>
+                            </div>`).join('')}
+                    </div>
+                    ${ticket.status !== 'closed' ? `
+                    <div class="reply-form">
+                        <textarea id="reply-${ticket.id}" placeholder="پاسخ شما..."></textarea>
+                        <button onclick="addCustomerReply('${ticket.id}')">ارسال</button>
+                    </div>` : ''}
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        window.addCustomerReply = function(ticketId) {
+            const textarea = document.getElementById(`reply-${ticketId}`);
+            const replyText = textarea.value.trim();
+            if (!replyText) return alert('پاسخ نمی‌تواند خالی باشد.');
+            let tickets = JSON.parse(localStorage.getItem('tickets')) || [];
+            const ticket = tickets.find(t => t.id === ticketId);
+            if (ticket) {
+                ticket.replies.push({ author: 'customer', text: replyText, date: new Date().toLocaleString('fa-IR') });
+                localStorage.setItem('tickets', JSON.stringify(tickets));
+                searchTickets(document.getElementById('searchQuery').value.trim());
+            }
+        };
+
+        document.getElementById('searchBtn').addEventListener('click', () => {
+            searchTickets(document.getElementById('searchQuery').value.trim());
+        });
+        document.getElementById('searchQuery').addEventListener('keypress', e => {
+            if (e.key === 'Enter') searchTickets(e.target.value.trim());
+        });
+
+
+
+
+        const ADMIN_PASSWORD = '123456';
+        if (!sessionStorage.getItem('adminAuth')) {
+            const pass = prompt('رمز عبور مدیریت:');
+            if (pass !== ADMIN_PASSWORD) {
+                alert('دسترسی غیرمجاز!');
+                window.location.href = 'ticket.html';
+                throw new Error('Unauthorized');
+            }
+            sessionStorage.setItem('adminAuth', 'true');
+        }
+
+        function logout() {
+            sessionStorage.removeItem('adminAuth');
+            window.location.reload();
+        }
+
+        function deleteAllTickets() {
+            if (confirm('آیا از حذف تمام تیکت‌ها اطمینان دارید؟')) {
+                localStorage.removeItem('tickets');
+                renderAllTickets();
+                alert('همه تیکت‌ها حذف شدند.');
+            }
+        }
+
+        function escapeHtml(text) {
+            const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
+            return String(text).replace(/[&<>"']/g, m => map[m]);
+        }
+
+        function renderAllTickets() {
+            const tickets = JSON.parse(localStorage.getItem('tickets')) || [];
+            const container = document.getElementById('ticketsContainer');
+            if (tickets.length === 0) {
+                container.innerHTML = '<div class="empty-state">هیچ تیکتی ثبت نشده است.</div>';
+                return;
+            }
+            container.innerHTML = '';
+            tickets.slice().reverse().forEach(ticket => {
+                const div = document.createElement('div');
+                div.className = 'ticket-admin-card';
+                div.innerHTML = `
+                    <div class="admin-ticket-header">
+                        <div class="ticket-meta">
+                            <span class="ticket-id-badge">${ticket.id}</span>
+                            <span class="priority-badge">${ticket.priority}</span>
+                            <span>${ticket.date}</span>
+                        </div>
+                        <select class="status-select" data-id="${ticket.id}">
+                            <option value="open" ${ticket.status === 'open' ? 'selected' : ''}>باز</option>
+                            <option value="in-progress" ${ticket.status === 'in-progress' ? 'selected' : ''}>در حال بررسی</option>
+                            <option value="closed" ${ticket.status === 'closed' ? 'selected' : ''}>بسته</option>
+                        </select>
+                    </div>
+                    <div class="customer-info">
+                        <strong>${escapeHtml(ticket.name)}</strong> (${escapeHtml(ticket.email)})
+                    </div>
+                    <div class="ticket-subject" style="font-size:18px;font-weight:600;margin:10px 0">${escapeHtml(ticket.subject)}</div>
+                    <div class="message-content">${escapeHtml(ticket.message)}</div>
+                    <div class="replies-box">
+                        <strong>پاسخ‌ها:</strong>
+                        ${ticket.replies.length === 0 ? '<p>بدون پاسخ</p>' : 
+                          ticket.replies.map(r => `
+                            <div class="reply-item ${r.author === 'admin' ? 'admin-reply' : ''}">
+                                <em>${r.author === 'admin' ? 'ادمین' : 'مشتری'}:</em> ${escapeHtml(r.text)}
+                                <div style="font-size:11px;color:#999">${r.date}</div>
+                            </div>`).join('')}
+                    </div>
+                    <div class="admin-reply-form">
+                        <textarea id="admin-reply-${ticket.id}" placeholder="پاسخ ادمین..."></textarea>
+                        <button onclick="submitAdminReply('${ticket.id}')">ارسال</button>
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+
+            document.querySelectorAll('.status-select').forEach(select => {
+                select.addEventListener('change', function() {
+                    const ticketId = this.dataset.id;
+                    const newStatus = this.value;
+                    let tickets = JSON.parse(localStorage.getItem('tickets')) || [];
+                    const ticket = tickets.find(t => t.id === ticketId);
+                    if (ticket) {
+                        ticket.status = newStatus;
+                        localStorage.setItem('tickets', JSON.stringify(tickets));
+                        renderAllTickets();
+                    }
+                });
+            });
+        }
+
+        window.submitAdminReply = function(ticketId) {
+            const replyText = document.getElementById(`admin-reply-${ticketId}`).value.trim();
+            if (!replyText) return alert('پاسخ نمی‌تواند خالی باشد.');
+            let tickets = JSON.parse(localStorage.getItem('tickets')) || [];
+            const ticket = tickets.find(t => t.id === ticketId);
+            if (ticket) {
+                ticket.replies.push({ author: 'admin', text: replyText, date: new Date().toLocaleString('fa-IR') });
+                localStorage.setItem('tickets', JSON.stringify(tickets));
+                renderAllTickets();
+            }
+        };
+
+        renderAllTickets();
+
+
+
+
+        document.getElementById('ticketForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const name = document.getElementById('name').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const subject = document.getElementById('subject').value.trim();
+            const message = document.getElementById('message').value.trim();
+            const priority = document.getElementById('priority').value;
+            const msgDiv = document.getElementById('formMessage');
+
+            if (!name || !email || !subject || !message) {
+                msgDiv.textContent = 'لطفاً همه فیلدهای ضروری را پر کنید.';
+                msgDiv.className = 'form-message error';
+                return;
+            }
+
+            const newTicket = {
+                id: 'TKT-' + Date.now().toString(36).toUpperCase(),
+                name, email, subject, message, priority,
+                status: 'open',
+                date: new Date().toLocaleString('fa-IR'),
+                replies: []
+            };
+
+            let tickets = JSON.parse(localStorage.getItem('tickets')) || [];
+            tickets.push(newTicket);
+            localStorage.setItem('tickets', JSON.stringify(tickets));
+
+            msgDiv.innerHTML = `✅ تیکت شما با موفقیت ثبت شد.<br>شناسه پیگیری: <strong>${newTicket.id}</strong><br>برای مشاهده وضعیت به <a href="customer.html">پرتال مشتریان</a> مراجعه کنید.`;
+            msgDiv.className = 'form-message success';
+            this.reset();
+        });
