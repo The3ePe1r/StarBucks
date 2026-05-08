@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>پنل مدیریت تیکت‌ها</title>
+    <link rel="icon" type="image/png" href="../images/image.png">
+    <title>پنل مدیریت</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
@@ -12,7 +13,8 @@
             padding: 20px;
             direction: rtl;
         }
-        .admin-wrapper { max-width: 1000px; margin: 20px auto; }
+        
+        .admin-wrapper { max-width: 1100px; margin: 20px auto; }
         .admin-header {
             display: flex;
             justify-content: space-between;
@@ -22,9 +24,11 @@
             border-radius: 16px;
             box-shadow: 0 5px 20px rgba(0,0,0,0.05);
             margin-bottom: 25px;
+            flex-wrap: wrap;
+            gap: 15px;
         }
         .admin-header h2 { font-size: 26px; color: #2c3e50; }
-        .header-actions { display: flex; gap: 10px; }
+        .header-actions { display: flex; gap: 10px; flex-wrap: wrap; }
         .btn {
             border: none;
             padding: 10px 20px;
@@ -33,12 +37,46 @@
             cursor: pointer;
             transition: 0.2s;
             font-size: 14px;
+            white-space: nowrap;
+            font-family: 'Yekan','vazir',Arial, Helvetica, sans-serif;
         }
-        .btn-danger { background: #e74c3c; color: white; font-family: 'Yekan','vazir',Arial, Helvetica, sans-serif; }
+        .btn-danger { background: #e74c3c; color: white; }
         .btn-danger:hover { background: #c0392b; }
-        .btn-warning { background: #f39c12; color: white; font-family: 'Yekan','vazir',Arial, Helvetica, sans-serif; }
+        .btn-warning { background: #f39c12; color: white; }
         .btn-warning:hover { background: #e67e22; }
-        .ticket-admin-card {
+        .btn-primary { background: #0d6efd; color: white; }
+        .btn-primary:hover { background: #0b5ed7; }
+        .btn-secondary { background: #6c757d; color: white; }
+        .btn-secondary:hover { background: #5c636a; }
+
+        /* تب‌ها */
+        .admin-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .tab-btn {
+            padding: 12px 25px;
+            background: white;
+            border: none;
+            border-radius: 12px 12px 0 0;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.03);
+            border-bottom: 3px solid transparent;
+            transition: 0.2s;
+            font-family: 'Yekan','vazir',Arial, Helvetica, sans-serif;
+        }
+        .tab-btn.active {
+            color: #0d6efd;
+            border-bottom-color: #0d6efd;
+            background: #f8f9fa;
+        }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        /* کارت‌ها */
+        .ticket-admin-card, .message-card {
             background: white;
             border-radius: 16px;
             padding: 25px;
@@ -46,20 +84,20 @@
             box-shadow: 0 5px 20px rgba(0,0,0,0.05);
             transition: 0.2s;
         }
-        .ticket-admin-card:hover { box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
-        .admin-ticket-header {
+        .ticket-admin-card:hover, .message-card:hover { box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        .admin-ticket-header, .message-header {
             display: flex;
             justify-content: space-between;
             flex-wrap: wrap;
             align-items: center;
             margin-bottom: 15px;
         }
-        .ticket-meta { display: flex; align-items: center; gap: 15px; flex-wrap: wrap; }
+        .ticket-meta, .message-meta { display: flex; align-items: center; gap: 15px; flex-wrap: wrap; }
         .ticket-id-badge { background: #ecf0f1; padding: 5px 12px; border-radius: 8px; font-family: monospace; font-weight: bold; }
         .priority-badge { padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: bold; background: #ecf0f1; }
-        .status-select { padding: 8px 12px; border-radius: 10px; border: 2px solid #e0e6ed; font-weight: bold; cursor: pointer; }
+        .status-select { font-family: 'Yekan','vazir',Arial, Helvetica, sans-serif;  padding: 8px 12px; border-radius: 10px; border: 2px solid #e0e6ed; font-weight: bold; cursor: pointer; }
         .customer-info { color: #2c3e50; margin: 10px 0; font-size: 15px; }
-        .message-content { background: #f8f9fa; border-radius: 12px; padding: 15px; margin: 15px 0; line-height: 1.6; }
+        .message-content { background: #f8f9fa; border-radius: 12px; padding: 15px; margin: 15px 0; line-height: 1.6; white-space: pre-wrap; }
         .replies-box { background: #f4f6f8; border-radius: 12px; padding: 15px; margin: 15px 0; }
         .reply-item {
             background: white;
@@ -80,35 +118,128 @@
         }
         .admin-reply-form button {
             background: #2ecc71;
-            font-family: 'Yekan','vazir',Arial, Helvetica, sans-serif; 
             border: none;
             color: white;
             padding: 12px 20px;
             border-radius: 12px;
             font-weight: bold;
             cursor: pointer;
+            font-family: 'Yekan','vazir',Arial, Helvetica, sans-serif;
         }
         .empty-state { text-align: center; padding: 60px 20px; color: #7f8c8d; font-size: 18px; }
-        .status-select {
-            font-family: 'Yekan','vazir',Arial, Helvetica, sans-serif; 
+
+        /* مودال */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.6);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+            animation: fadeInOverlay 0.2s ease;
         }
-        option {
-            font-family: 'Yekan','vazir',Arial, Helvetica, sans-serif; 
+        @keyframes fadeInOverlay { from { opacity: 0; } to { opacity: 1; } }
+        .modal-box {
+            background: white;
+            padding: 30px;
+            border-radius: 16px;
+            max-width: 420px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 0 40px rgba(0,0,0,0.3);
+            animation: popIn 0.2s ease;
         }
+        @keyframes popIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        .modal-box p { font-size: 17px; margin-bottom: 15px; }
+        .modal-input {
+            width: 100%;
+            padding: 12px;
+            margin: 15px 0;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            font-family: inherit;
+            font-size: 16px;
+            text-align: center;
+        }
+        .modal-buttons { font-family: 'Yekan','vazir',Arial, Helvetica, sans-serif; margin-top: 20px; display: flex; justify-content: center; gap: 10px; }
+
+        .delete-btn {
+            background: none;
+            border: none;
+            color: #e74c3c;
+            cursor: pointer;
+            font-weight: bold;
+            padding: 5px 10px;
+            border-radius: 6px;
+            transition: 0.2s;
+            font-family: 'Yekan','vazir',Arial, Helvetica, sans-serif;
+        }
+        .delete-btn:hover { background: #fdeaea; }
     </style>
 </head>
 <body>
     <div class="admin-wrapper">
         <div class="admin-header">
-            <h2>🛡️ پنل مدیریت تیکت‌ها</h2>
+            <h2>پنل مدیریت</h2>
             <div class="header-actions">
-                <button class="btn btn-warning" onclick="deleteAllTickets()">حذف همه تیکت‌ها</button>
-                <button class="btn btn-danger" onclick="logout()">خروج</button>
+                <button id="logoutBtn" class="btn btn-danger">خروج</button>
             </div>
         </div>
-        <div id="ticketsContainer"></div>
+
+        <!-- تب‌ها -->
+        <div class="admin-tabs">
+            <button class="tab-btn active" data-tab="tickets">تیکت‌ها</button>
+            <button class="tab-btn" data-tab="messages">پیام‌های تماس</button>
+        </div>
+
+        <!-- محتوای تیکت‌ها -->
+        <div id="ticketsTab" class="tab-content active">
+            <div style="display:flex;justify-content:flex-end;margin-bottom:15px;">
+                <button id="deleteAllTicketsBtn" class="btn btn-warning">حذف همه تیکت‌ها</button>
+            </div>
+            <div id="ticketsContainer"></div>
+        </div>
+
+        <!-- محتوای پیام‌های تماس -->
+        <div id="messagesTab" class="tab-content">
+            <div style="display:flex;justify-content:flex-end;margin-bottom:15px;">
+                <button id="deleteAllMessagesBtn" class="btn btn-warning">حذف همه پیام‌ها</button>
+            </div>
+            <div id="messagesContainer"></div>
+        </div>
     </div>
 
-<script src="../JS/script.js"></script>
+    <!-- مودال‌ها -->
+    <div id="passwordModal" class="modal-overlay" style="display: none;">
+        <div class="modal-box">
+            <p id="passwordModalMessage">لطفاً رمز عبور مدیریت را وارد کنید:</p>
+            <input type="password" id="passwordInput" class="modal-input" placeholder="••••••" autocomplete="off">
+            <div class="modal-buttons">
+                <button id="passwordSubmit" class="btn btn-primary">تأیید</button>
+                <button id="passwordCancel" class="btn btn-secondary">انصراف</button>
+            </div>
+        </div>
+    </div>
+    <div id="confirmModal" class="modal-overlay" style="display: none;">
+        <div class="modal-box">
+            <p id="confirmModalMessage">آیا مطمئن هستید؟</p>
+            <div class="modal-buttons">
+                <button id="confirmYes" class="btn btn-danger">بله</button>
+                <button id="confirmNo" class="btn btn-secondary">خیر</button>
+            </div>
+        </div>
+    </div>
+    <div id="alertModal" class="modal-overlay" style="display: none;">
+        <div class="modal-box">
+            <p id="alertModalMessage">پیغام</p>
+            <div class="modal-buttons">
+                <button id="alertOk" class="btn btn-primary">باشه</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../JS/script.js"></script>
 </body>
 </html>
