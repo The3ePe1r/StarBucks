@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="../static/images/image.png">
+    <title>پرتال مشتریان | پیگیری تیکت</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'vazir','Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f0f2f5;
+            padding: 20px;
+            direction: rtl;
+        }
+        .portal-wrapper {
+            max-width: 850px;
+            margin: 30px auto;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 35px;
+        }
+        .header h2 { font-size: 32px; color: #2c3e50; margin-bottom: 5px; }
+        .header p { color: #7f8c8d; font-size: 16px; }
+
+        .search-card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.05);
+            margin-bottom: 30px;
+        }
+        .search-box label { font-weight: 600; display: block; margin-bottom: 10px; color: #2c3e50; font-size: 16px; }
+        .search-input-group { display: flex; gap: 10px; }
+        .search-input-group input {
+            flex: 1;
+            padding: 14px 15px;
+            border: 2px solid #e0e6ed;
+            border-radius: 12px;
+            font-size: 15px;
+            transition: all 0.3s;
+            background: #fafbfc;
+            font-family: inherit;
+        }
+        .search-input-group input:focus {
+            outline: none;
+            border-color: #3498db;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(52,152,219,0.1);
+        }
+        .search-input-group button {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 0 25px;
+            border-radius: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: inherit;
+        }
+        .search-input-group button:hover { opacity: 0.9; transform: translateY(-1px); }
+        .search-hint { font-size: 13px; color: #95a5a6; margin-top: 10px; }
+
+        .ticket-card {
+            background: white;
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+            border-right: 5px solid #3498db;
+            transition: 0.2s;
+        }
+        .ticket-card.closed { border-right-color: #95a5a6; opacity: 0.75; }
+        .ticket-card:hover { box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        .ticket-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; }
+        .ticket-id { font-family: 'Courier New', monospace; font-weight: bold; background: #ecf0f1; padding: 5px 12px; border-radius: 8px; font-size: 14px; }
+        .ticket-date { color: #7f8c8d; font-size: 14px; }
+        .status-badge { display: inline-block; padding: 5px 14px; border-radius: 20px; font-size: 13px; font-weight: bold; }
+        .status-open { background: #3498db; color: white; }
+        .status-in-progress { background: #f39c12; color: white; }
+        .status-closed { background: #7f8c8d; color: white; }
+        .ticket-subject { font-size: 18px; font-weight: 600; color: #2c3e50; margin: 10px 0; }
+        .ticket-detail { color: #555; line-height: 1.6; }
+        .replies-section { margin-top: 20px; background: #f8f9fa; border-radius: 12px; padding: 15px; }
+        .reply-bubble { background: white; border-radius: 12px; padding: 12px 15px; margin: 8px 0; border-right: 4px solid #3498db; font-size: 14px; }
+        .reply-bubble.admin { border-right-color: #e74c3c; background: #fdf2f2; }
+        .reply-author { font-weight: bold; font-size: 13px; margin-bottom: 5px; }
+        .reply-date { font-size: 11px; color: #999; }
+        .reply-form { margin-top: 15px; display: flex; gap: 10px; align-items: flex-start; }
+        .reply-form textarea {
+            flex: 1;
+            padding: 12px;
+            border-radius: 12px;
+            border: 2px solid #e0e6ed;
+            resize: vertical;
+            font-family: inherit;
+        }
+        .reply-form button {
+            background: #2ecc71;
+            border: none;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            font-family: inherit;
+        }
+        .no-ticket { text-align: center; padding: 50px; color: #7f8c8d; font-size: 18px; }
+
+        .back-home {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .back-home a {
+            color: #3498db;
+            text-decoration: none;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="portal-wrapper">
+        <div class="header">
+            <h2>📋 پرتال مشتریان</h2>
+            <p>وضعیت تیکت‌های خود را پیگیری کنید</p>
+        </div>
+
+        <div class="search-card">
+            <div class="search-box">
+                <label>ایمیل یا شناسه تیکت خود را وارد کنید:</label>
+                <div class="search-input-group">
+                    <input type="text" id="searchQuery" placeholder="example@domain.com یا TKT-XXXXX">
+                    <button id="searchBtn">جستجو</button>
+                </div>
+                <div class="search-hint">🔍 با ایمیل (همه تیکت‌هایتان) یا شناسه (یک تیکت خاص) جستجو کنید</div>
+            </div>
+        </div>
+
+        <div id="ticketsContainer"></div>
+
+        <div class="back-home">
+            <a href="/home.html">← بازگشت به صفحه اصلی</a>
+        </div>
+    </div>
+
+    <script src="/js/script.js"></script>
+</body>
+</html>
