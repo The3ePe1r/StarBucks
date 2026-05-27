@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<!-- saved from url=(0029)http://10.34.95.79:5000/admin -->
+<html lang="fa" dir="rtl"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><style>body {transition: opacity ease-in 0.2s; } 
+body[unresolved] {opacity: 0; display: block; overflow: hidden; position: relative; } 
+</style>
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="http://10.34.95.79:5000/images/image.png">
+    <title>پنل مدیریت</title>
+    <style>
+        /* همان استایل‌های قبلی admin.html (کاملاً پوشش داده شده) */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f0f2f5; padding: 20px; direction: rtl; }
+        .admin-wrapper { max-width: 1100px; margin: 20px auto; }
+        .admin-header { display: flex; justify-content: space-between; align-items: center; background: white; padding: 20px 30px; border-radius: 16px; box-shadow: 0 5px 20px rgba(0,0,0,0.05); margin-bottom: 25px; flex-wrap: wrap; gap: 15px; }
+        .admin-header h2 { font-size: 26px; color: #2c3e50; }
+        .header-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+        .btn { border: none; padding: 10px 20px; border-radius: 10px; font-weight: bold; cursor: pointer; transition: 0.2s; font-size: 14px; white-space: nowrap; font-family: 'Yekan','vazir',Arial, Helvetica, sans-serif; }
+        .btn-danger { background: #e74c3c; color: white; } .btn-danger:hover { background: #c0392b; }
+        .btn-warning { background: #f39c12; color: white; } .btn-warning:hover { background: #e67e22; }
+        .btn-primary { background: #0d6efd; color: white; } .btn-primary:hover { background: #0b5ed7; }
+        .btn-secondary { background: #6c757d; color: white; } .btn-secondary:hover { background: #5c636a; }
+        .admin-tabs { display: flex; gap: 10px; margin-bottom: 20px; }
+        .tab-btn { padding: 12px 25px; background: white; border: none; border-radius: 12px 12px 0 0; font-weight: bold; cursor: pointer; box-shadow: 0 -2px 10px rgba(0,0,0,0.03); border-bottom: 3px solid transparent; transition: 0.2s; font-family: 'Yekan','vazir',Arial, Helvetica, sans-serif; }
+        .tab-btn.active { color: #0d6efd; border-bottom-color: #0d6efd; background: #f8f9fa; }
+        .tab-content { display: none; } .tab-content.active { display: block; }
+        .ticket-admin-card, .message-card { background: white; border-radius: 16px; padding: 25px; margin-bottom: 20px; box-shadow: 0 5px 20px rgba(0,0,0,0.05); transition: 0.2s; }
+        .ticket-admin-card:hover, .message-card:hover { box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        .admin-ticket-header, .message-header { display: flex; justify-content: space-between; flex-wrap: wrap; align-items: center; margin-bottom: 15px; }
+        .ticket-meta, .message-meta { display: flex; align-items: center; gap: 15px; flex-wrap: wrap; }
+        .ticket-id-badge { background: #ecf0f1; padding: 5px 12px; border-radius: 8px; font-family: monospace; font-weight: bold; }
+        .priority-badge { padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: bold; background: #ecf0f1; }
+        .status-select { font-family: 'Yekan','vazir',Arial, Helvetica, sans-serif; padding: 8px 12px; border-radius: 10px; border: 2px solid #e0e6ed; font-weight: bold; cursor: pointer; }
+        .customer-info { color: #2c3e50; margin: 10px 0; font-size: 15px; }
+        .message-content { background: #f8f9fa; border-radius: 12px; padding: 15px; margin: 15px 0; line-height: 1.6; white-space: pre-wrap; }
+        .replies-box { background: #f4f6f8; border-radius: 12px; padding: 15px; margin: 15px 0; }
+        .reply-item { background: white; border-radius: 10px; padding: 10px 15px; margin: 8px 0; border-right: 4px solid #3498db; }
+        .reply-item.admin-reply { border-right-color: #e74c3c; background: #fdf2f2; }
+        .admin-reply-form { display: flex; gap: 10px; margin-top: 15px; align-items: flex-start; }
+        .admin-reply-form textarea { flex: 1; padding: 12px; border-radius: 12px; border: 2px solid #e0e6ed; resize: vertical; font-family: inherit; }
+        .admin-reply-form button { background: #2ecc71; border: none; color: white; padding: 12px 20px; border-radius: 12px; font-weight: bold; cursor: pointer; font-family: 'Yekan','vazir',Arial, Helvetica, sans-serif; }
+        .empty-state { text-align: center; padding: 60px 20px; color: #7f8c8d; font-size: 18px; }
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: flex; justify-content: center; align-items: center; z-index: 10000; animation: fadeInOverlay 0.2s ease; }
+        @keyframes fadeInOverlay { from { opacity: 0; } to { opacity: 1; } }
+        .modal-box { background: white; padding: 30px; border-radius: 16px; max-width: 420px; width: 90%; text-align: center; box-shadow: 0 0 40px rgba(0,0,0,0.3); animation: popIn 0.2s ease; }
+        @keyframes popIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        .modal-box p { font-size: 17px; margin-bottom: 15px; }
+        .modal-input { width: 100%; padding: 12px; margin: 15px 0; border: 2px solid #ddd; border-radius: 10px; font-family: inherit; font-size: 16px; text-align: center; }
+        .modal-buttons { font-family: 'Yekan','vazir',Arial, Helvetica, sans-serif; margin-top: 20px; display: flex; justify-content: center; gap: 10px; }
+        .delete-btn { background: none; border: none; color: #e74c3c; cursor: pointer; font-weight: bold; padding: 5px 10px; border-radius: 6px; transition: 0.2s; font-family: 'Yekan','vazir',Arial, Helvetica, sans-serif; }
+        .delete-btn:hover { background: #fdeaea; }
+    </style>
+</head>
+<body>
+    <div class="admin-wrapper">
+        <div class="admin-header">
+            <h2>پنل مدیریت</h2>
+            <div class="header-actions">
+                <button id="logoutBtn" class="btn btn-danger">خروج</button>
+            </div>
+        </div>
+
+        <div class="admin-tabs">
+            <button class="tab-btn" data-tab="tickets">تیکت‌ها</button>
+            <button class="tab-btn" data-tab="messages">پیام‌های تماس</button>
+            <button class="tab-btn active" data-tab="products">محصولات</button>
+        </div>
+
+        <div id="ticketsTab" class="tab-content">
+            <div style="display:flex;justify-content:flex-end;margin-bottom:15px;">
+                <button id="deleteAllTicketsBtn" class="btn btn-warning">حذف همه تیکت‌ها</button>
+            </div>
+            <div id="ticketsContainer">
+                <div class="ticket-admin-card">
+                    <div class="admin-ticket-header">
+                        <div class="ticket-meta">
+                            <span class="ticket-id-badge">TKT-LDHT8</span>
+                            <span class="priority-badge">normal</span>
+                            <span>2026/05/21 19:57</span>
+                        </div>
+                        <select class="status-select" data-id="15">
+                            <option value="open" selected="">باز</option>
+                            <option value="in-progress">در حال بررسی</option>
+                            <option value="closed">بسته</option>
+                        </select>
+                    </div>
+                    <div class="customer-info"><strong>سپهر محمدی</strong> (sepehrrgb12@gmail.com)</div>
+                    <h3 style="margin:10px 0;">تست</h3>
+                    <div class="message-content">تست</div>
+                    <div class="replies-box">
+                        <strong>پاسخ‌ها:</strong>
+                        
+                            <div class="reply-item ">
+                                <em>مشتری:</em> تست
+                                <div style="font-size:11px;color:#999">2026/05/21 20:17</div>
+                            </div>
+                            <div class="reply-item admin-reply">
+                                <em>ادمین:</em> تست
+                                <div style="font-size:11px;color:#999">2026/05/21 20:23</div>
+                            </div>
+                            <div class="reply-item ">
+                                <em>مشتری:</em> تست
+                                <div style="font-size:11px;color:#999">2026/05/21 20:23</div>
+                            </div>
+                    </div>
+                    <div class="admin-reply-form">
+                        <textarea id="admin-reply-15" class="admin-reply-textarea" placeholder="پاسخ ادمین..."></textarea>
+                        <button class="admin-reply-btn" data-id="15">ارسال</button>
+                    </div>
+                </div>
+            
+                <div class="ticket-admin-card">
+                    <div class="admin-ticket-header">
+                        <div class="ticket-meta">
+                            <span class="ticket-id-badge">TKT-5EQIX</span>
+                            <span class="priority-badge">normal</span>
+                            <span>2026/05/21 19:23</span>
+                        </div>
+                        <select class="status-select" data-id="14">
+                            <option value="open" selected="">باز</option>
+                            <option value="in-progress">در حال بررسی</option>
+                            <option value="closed">بسته</option>
+                        </select>
+                    </div>
+                    <div class="customer-info"><strong>سپهر محمدی</strong> (sepehrrgb12@gmail.com)</div>
+                    <h3 style="margin:10px 0;">تست</h3>
+                    <div class="message-content">تست</div>
+                    <div class="replies-box">
+                        <strong>پاسخ‌ها:</strong>
+                        
+                            <div class="reply-item ">
+                                <em>مشتری:</em> سیبسب
+                                <div style="font-size:11px;color:#999">2026/05/21 19:23</div>
+                            </div>
+                            <div class="reply-item admin-reply">
+                                <em>ادمین:</em> سیبسیبیب
+                                <div style="font-size:11px;color:#999">2026/05/21 19:23</div>
+                            </div>
+                            <div class="reply-item ">
+                                <em>مشتری:</em> سیبسبسی
+                                <div style="font-size:11px;color:#999">2026/05/21 19:23</div>
+                            </div>
+                            <div class="reply-item admin-reply">
+                                <em>ادمین:</em> سیبسیب
+                                <div style="font-size:11px;color:#999">2026/05/21 19:23</div>
+                            </div>
+                            <div class="reply-item admin-reply">
+                                <em>ادمین:</em> سیبسیب
+                                <div style="font-size:11px;color:#999">2026/05/21 19:23</div>
+                            </div>
+                            <div class="reply-item ">
+                                <em>مشتری:</em> طرسیبسیب
+                                <div style="font-size:11px;color:#999">2026/05/21 19:26</div>
+                            </div>
+                            <div class="reply-item ">
+                                <em>مشتری:</em> سیبسیبسیب
+                                <div style="font-size:11px;color:#999">2026/05/21 19:26</div>
+                            </div>
+                            <div class="reply-item admin-reply">
+                                <em>ادمین:</em> شسیشسی
+                                <div style="font-size:11px;color:#999">2026/05/21 19:27</div>
+                            </div>
+                            <div class="reply-item ">
+                                <em>مشتری:</em> شسیشسیسشی
+                                <div style="font-size:11px;color:#999">2026/05/21 19:27</div>
+                            </div>
+                            <div class="reply-item admin-reply">
+                                <em>ادمین:</em> شسیشسیشسی
+                                <div style="font-size:11px;color:#999">2026/05/21 19:29</div>
+                            </div>
+                            <div class="reply-item ">
+                                <em>مشتری:</em> شسیشسیشسی
+                                <div style="font-size:11px;color:#999">2026/05/21 19:29</div>
+                            </div>
+                            <div class="reply-item ">
+                                <em>مشتری:</em> شسیشی
+                                <div style="font-size:11px;color:#999">2026/05/21 19:29</div>
+                            </div>
+                    </div>
+                    <div class="admin-reply-form">
+                        <textarea id="admin-reply-14" class="admin-reply-textarea" placeholder="پاسخ ادمین..."></textarea>
+                        <button class="admin-reply-btn" data-id="14">ارسال</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="messagesTab" class="tab-content">
+            <div style="display:flex;justify-content:flex-end;margin-bottom:15px;">
+                <button id="deleteAllMessagesBtn" class="btn btn-warning">حذف همه پیام‌ها</button>
+            </div>
+            <div id="messagesContainer"></div>
+        </div>
+
+        <div id="productsTab" class="tab-content active">
+            <div style="display:flex; justify-content:flex-end; margin-bottom:15px;">
+                <button id="addProductBtn" class="btn btn-primary">افزودن محصول جدید</button>
+            </div>
+            <div id="productsContainer">
+                <table style="width:100%; border-collapse:collapse; background:white; border-radius:12px; overflow:hidden;">
+                    <thead style="background:#f0f2f5;">
+                        <tr><th>تصویر</th><th>نام</th><th>دسته</th><th>قیمت</th><th>ویژه</th><th>عملیات</th></tr>
+                    </thead>
+                    <tbody>
+                        
+                            <tr>
+                                <td><img src="./پنل مدیریت_files/item1.png" style="width:50px;height:50px;object-fit:cover;border-radius:6px;"></td>
+                                <td>آیس ماچا</td>
+                                <td>قهوه</td>
+                                <td>300,000 تومان</td>
+                                <td>⭐ بله</td>
+                                <td>
+                                    <button class="btn btn-secondary edit-product-btn" data-id="1" style="margin:0 4px;">✏️ ویرایش</button>
+                                    <button class="btn btn-danger delete-product-btn" data-id="1">🗑️ حذف</button>
+                                </td>
+                            </tr>
+                        
+                            <tr>
+                                <td><img src="./پنل مدیریت_files/item2.png" style="width:50px;height:50px;object-fit:cover;border-radius:6px;"></td>
+                                <td>کاپوچینو</td>
+                                <td>قهوه</td>
+                                <td>150,000 تومان</td>
+                                <td>⭐ بله</td>
+                                <td>
+                                    <button class="btn btn-secondary edit-product-btn" data-id="2" style="margin:0 4px;">✏️ ویرایش</button>
+                                    <button class="btn btn-danger delete-product-btn" data-id="2">🗑️ حذف</button>
+                                </td>
+                            </tr>
+                        
+                            <tr>
+                                <td><img src="./پنل مدیریت_files/item3.png" style="width:50px;height:50px;object-fit:cover;border-radius:6px;"></td>
+                                <td>امریکانو</td>
+                                <td>قهوه</td>
+                                <td>120,000 تومان</td>
+                                <td>⭐ بله</td>
+                                <td>
+                                    <button class="btn btn-secondary edit-product-btn" data-id="3" style="margin:0 4px;">✏️ ویرایش</button>
+                                    <button class="btn btn-danger delete-product-btn" data-id="3">🗑️ حذف</button>
+                                </td>
+                            </tr>
+                        
+                            <tr>
+                                <td><img src="./پنل مدیریت_files/item4.png" style="width:50px;height:50px;object-fit:cover;border-radius:6px;"></td>
+                                <td>کارامل لته</td>
+                                <td>قهوه</td>
+                                <td>150,000 تومان</td>
+                                <td>⭐ بله</td>
+                                <td>
+                                    <button class="btn btn-secondary edit-product-btn" data-id="4" style="margin:0 4px;">✏️ ویرایش</button>
+                                    <button class="btn btn-danger delete-product-btn" data-id="4">🗑️ حذف</button>
+                                </td>
+                            </tr>
+                        
+                            <tr>
+                                <td><img src="./پنل مدیریت_files/item5.png" style="width:50px;height:50px;object-fit:cover;border-radius:6px;"></td>
+                                <td>وانیل چیزکیک</td>
+                                <td>کیک</td>
+                                <td>350,000 تومان</td>
+                                <td>⭐ بله</td>
+                                <td>
+                                    <button class="btn btn-secondary edit-product-btn" data-id="5" style="margin:0 4px;">✏️ ویرایش</button>
+                                    <button class="btn btn-danger delete-product-btn" data-id="5">🗑️ حذف</button>
+                                </td>
+                            </tr>
+                        
+                            <tr>
+                                <td><img src="./پنل مدیریت_files/item6.png" style="width:50px;height:50px;object-fit:cover;border-radius:6px;"></td>
+                                <td>نیویورک چیزکیک</td>
+                                <td>کیک</td>
+                                <td>700,000 تومان</td>
+                                <td>خیر</td>
+                                <td>
+                                    <button class="btn btn-secondary edit-product-btn" data-id="6" style="margin:0 4px;">✏️ ویرایش</button>
+                                    <button class="btn btn-danger delete-product-btn" data-id="6">🗑️ حذف</button>
+                                </td>
+                            </tr>
+                        
+                            <tr>
+                                <td><img src="./پنل مدیریت_files/item7.png" style="width:50px;height:50px;object-fit:cover;border-radius:6px;"></td>
+                                <td>استرابری چیزکیک</td>
+                                <td>کیک</td>
+                                <td>400,000 تومان</td>
+                                <td>⭐ بله</td>
+                                <td>
+                                    <button class="btn btn-secondary edit-product-btn" data-id="7" style="margin:0 4px;">✏️ ویرایش</button>
+                                    <button class="btn btn-danger delete-product-btn" data-id="7">🗑️ حذف</button>
+                                </td>
+                            </tr>
+                        
+                            <tr>
+                                <td><img src="./پنل مدیریت_files/item8.png" style="width:50px;height:50px;object-fit:cover;border-radius:6px;"></td>
+                                <td>چاکلت چیزکیک</td>
+                                <td>کیک</td>
+                                <td>500,000 تومان</td>
+                                <td>⭐ بله</td>
+                                <td>
+                                    <button class="btn btn-secondary edit-product-btn" data-id="8" style="margin:0 4px;">✏️ ویرایش</button>
+                                    <button class="btn btn-danger delete-product-btn" data-id="8">🗑️ حذف</button>
+                                </td>
+                            </tr>
+                        
+                            <tr>
+                                <td><img src="./پنل مدیریت_files/product_9.jpg" style="width:50px;height:50px;object-fit:cover;border-radius:6px;"></td>
+                                <td>کافی استرابری چیزکیک</td>
+                                <td>قهوه</td>
+                                <td>500,000 تومان</td>
+                                <td>خیر</td>
+                                <td>
+                                    <button class="btn btn-secondary edit-product-btn" data-id="9" style="margin:0 4px;">✏️ ویرایش</button>
+                                    <button class="btn btn-danger delete-product-btn" data-id="9">🗑️ حذف</button>
+                                </td>
+                            </tr>
+                        
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- مودال‌ها -->
+    <div id="passwordModal" class="modal-overlay" style="display: none;">
+        <div class="modal-box">
+            <p id="passwordModalMessage">لطفاً رمز عبور مدیریت را وارد کنید:</p>
+            <input type="password" id="passwordInput" class="modal-input" placeholder="••••••" autocomplete="off">
+            <div class="modal-buttons">
+                <button id="passwordSubmit" class="btn btn-primary">تأیید</button>
+                <button id="passwordCancel" class="btn btn-secondary">انصراف</button>
+            </div>
+        </div>
+    </div>
+    <div id="confirmModal" class="modal-overlay" style="display: none;">
+        <div class="modal-box">
+            <p id="confirmModalMessage">آیا مطمئن هستید؟</p>
+            <div class="modal-buttons">
+                <button id="confirmYes" class="btn btn-danger">بله</button>
+                <button id="confirmNo" class="btn btn-secondary">خیر</button>
+            </div>
+        </div>
+    </div>
+    <div id="alertModal" class="modal-overlay" style="display: none;">
+        <div class="modal-box">
+            <p id="alertModalMessage">محصول با موفقیت ویرایش شد.</p>
+            <div class="modal-buttons">
+                <button id="alertOk" class="btn btn-primary">باشه</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- مودال محصول -->
+    <div id="productModal" class="modal-overlay" style="display: none;">
+        <div class="modal-box" style="max-width:500px; text-align:right; direction:rtl;">
+            <h2 id="productModalTitle">ویرایش محصول</h2>
+            <form id="productForm" enctype="multipart/form-data">
+                <input type="hidden" id="productId" value="3">
+                <div class="form-group"><label>نام محصول</label><input type="text" id="prodName" class="modal-input" required=""></div>
+                <div class="form-group"><label>دسته‌بندی</label>
+                    <select id="prodCategory" class="modal-input">
+                        <option value="coffee">قهوه</option>
+                        <option value="cake">کیک</option>
+                    </select>
+                </div>
+                <div class="form-group"><label>قیمت (تومان)</label><input type="text" id="prodPrice" class="modal-input" inputmode="numeric" pattern="[0-9]*" placeholder="مثلاً 150000" required=""></div>
+                <div class="form-group"><label>توضیح کوتاه (حداکثر ۲۰۰ کاراکتر)</label><input type="text" id="prodShortDesc" class="modal-input" maxlength="200" placeholder="خلاصه‌ای کوتاه از محصول"></div>
+                <div class="form-group"><label>توضیحات</label><textarea id="prodDescription" class="modal-input" rows="3"></textarea></div>
+                <div class="form-group">
+                    <label>مشخصات فنی (JSON)</label>
+                    <textarea id="prodSpecs" class="modal-input" rows="3" placeholder="{&quot;حجم&quot;:&quot;۴۰۰ میلی‌لیتر&quot;, &quot;دمای سرو&quot;:&quot;بسیار خنک&quot;, &quot;بسته‌بندی&quot;:&quot;لیوان مخصوص&quot;}"></textarea>
+                    <small style="color:#666;">می‌توانید مشخصات را به صورت JSON وارد کنید (کلید: مقدار).</small>
+                </div>
+                <div class="form-group"><label>تصویر</label><input type="file" id="prodImage" accept="image/*"></div>
+                <div class="form-group"><label><input type="checkbox" id="prodIsSpecial"> محصول ویژه</label></div>
+                <div class="form-group"><label>درصد تخفیف</label><input type="number" id="prodDiscount" class="modal-input" value="0"></div>
+                <div class="modal-buttons">
+                    <button type="submit" class="btn btn-primary">ذخیره</button>
+                    <button type="button" class="btn btn-secondary" id="cancelProductBtn">انصراف</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="./پنل مدیریت_files/script.js.download"></script>
+
+<veepn-lock-screen><template shadowrootmode="open"><style>html{box-sizing:border-box;text-size-adjust:100%;word-break:normal;tab-size:4}*,:before,:after{background-repeat:no-repeat;box-sizing:border-box}:before,:after{text-decoration:inherit;vertical-align:inherit}*{padding:0;margin:0}hr{overflow:visible;height:0;color:inherit;border:0;border-top:1px solid}details,main{display:block}summary{display:list-item}small{font-size:80%}[hidden]{display:none!important}abbr[title]{border-bottom:none;text-decoration:underline;text-decoration:underline dotted}a{background-color:transparent}a:active,a:hover{outline-width:0}code,kbd,pre,samp{font-family:monospace}pre{font-size:1em}b,strong{font-weight:bolder}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sub{bottom:-.25em}sup{top:-.5em}table{border-color:inherit;text-indent:0}iframe{border-style:none}input{border-radius:0}[type=number]::-webkit-inner-spin-button,[type=number]::-webkit-outer-spin-button{height:auto}[type=search]{appearance:textfield;outline-offset:-2px}[type=search]::-webkit-search-decoration{appearance:none}textarea{overflow:auto;resize:vertical}button,input,optgroup,select,textarea{font:inherit;color:inherit}optgroup{font-weight:700}button{overflow:visible}button,select{text-transform:none}button,[type=button],[type=reset],[type=submit],[role=button]{cursor:pointer}button::-moz-focus-inner,[type=button]::-moz-focus-inner,[type=reset]::-moz-focus-inner,[type=submit]::-moz-focus-inner{border-style:none;padding:0}button,html [type=button],[type=reset],[type=submit]{appearance:auto}button,input,select,textarea{background-color:transparent;border-style:none}button:-moz-focusring,[type=button]::-moz-focus-inner,[type=reset]::-moz-focus-inner,[type=submit]::-moz-focus-inner{outline:1px dotted ButtonText}select{appearance:none}a:focus,button:focus,input:focus,select:focus,textarea:focus{outline-width:0}select::-ms-expand{display:none}select::-ms-value{color:currentcolor}legend{border:0;color:inherit;display:table;white-space:normal;max-width:100%}::-webkit-file-upload-button{appearance:auto;color:inherit;font:inherit}[disabled]{cursor:default}img{border-style:none}progress{vertical-align:baseline}[aria-busy=true]{cursor:progress}[aria-controls]{cursor:pointer}[aria-disabled=true]{cursor:default}ul,ol{list-style-type:none}figure{margin:0}@keyframes slide-in{0%{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}.gradient-blue{background:radial-gradient(106.41% 128.47% at 50.15% 128.47%,#23abff,#3066ff)}.gradient-green{background:radial-gradient(92.26% 118.88% at 50.15% .13%,#00c3c3,#00aab3)}.gradient-purple{background:radial-gradient(165.12% 115.56% at 50.15% .13%,#a15aff,#00a0eb)}.bg-blue{background-color:#f2f5ff}.bg-purple{background-color:#f7f0ff}.bg-green{background-color:#ebffed}.lock-screen{font-family:FigtreeVF,sans-serif;letter-spacing:normal;position:fixed;z-index:2147483638;right:24px;bottom:24px;width:327px;border-radius:24px;overflow:hidden;box-shadow:0 24px 32px #00000014;animation:slide-in .3s ease-in-out forwards}.lock-screen__content{position:relative;padding:24px 24px 64px}.lock-screen__close{position:absolute;top:16px;right:16px;width:24px;height:24px;display:flex;align-items:center;justify-content:center;opacity:.5}.lock-screen__label{height:26px;width:fit-content;border-radius:50px;background-color:#fff3;padding-inline:16px;display:flex;align-items:center;justify-content:center;gap:8px;color:#fff;font-size:12px;line-height:18px;margin:-8px auto 16px}.lock-screen__title{color:#fff;text-align:center;font-size:20px;line-height:28px;font-weight:600;margin-bottom:8px}.lock-screen__description{color:#f5f6f7;text-align:center;font-size:14px;line-height:20px}.lock-screen__description b{font-weight:600}.lock-screen__card{position:relative;z-index:1;margin-top:-44px;background-color:#fff;border-radius:24px;padding:32px 20px 20px}.lock-screen__inner{margin-bottom:24px}.lock-screen__submit{display:flex;align-items:center;justify-content:center;gap:10px;font-weight:700;font-size:16px;height:40px;width:100%;border-radius:12px;padding-inline:16px;background-color:#f70;color:#fff;margin-bottom:16px}.lock-screen__skip{display:flex;align-items:center;justify-content:center;font-size:14px;line-height:20px;color:#82829c;margin-inline:auto}.price-card{border:1px solid #f2f2fc;background:linear-gradient(254.14deg,#fafbff .04%,#f5f8ff 100.04%);border-radius:24px;padding:24px 28px}.price-card__label{color:#4a5764;text-align:center;font-size:14px;line-height:20px;text-transform:uppercase;margin-bottom:16px}.price-card__price{display:flex;justify-content:center;align-items:flex-start;column-gap:2px;margin-bottom:12px}.price-card__currency{color:#515478;font-size:18px;line-height:28px}.price-card__number{color:#14142a;text-align:center;font-size:64px;line-height:54px}.price-card__wrap{display:flex;flex-direction:column}.price-card__decimal{color:#515478;font-size:18px;line-height:28px;font-weight:600}.price-card__period{color:#515478;font-size:14px;line-height:20px;margin-top:-6px}.price-card__discount{position:relative;display:flex;align-items:center;justify-content:center;margin-bottom:12px}.price-card__discount-divider{position:absolute;z-index:0;top:50%;left:0;width:100%;height:1px;background-color:#dbe2f9;transform:translateY(-50%)}.price-card__discount-icon{position:absolute;z-index:1;top:50%;left:50%;transform:translate(-50%,-50%)}.price-card__discount-text{position:relative;z-index:2;color:#fff;font-size:12px;font-weight:600;line-height:18px}.price-card__features{display:flex;align-items:center;justify-content:center;column-gap:16px}.price-card__feature{color:#222e3a;font-size:14px;line-height:20px;display:flex;align-items:center;gap:6px}.price-card__feature:before{content:"";display:block;width:4px;height:4px;background-color:#20df9e;border-radius:50%;flex-shrink:0}.features-list{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.features-list__item{display:flex;flex-direction:column;align-items:center;gap:6px}.features-list__icon{width:52px;height:52px;border-radius:12px;display:flex;align-items:center;justify-content:center}.features-list__text{color:#293a53;text-align:center;font-size:16px;line-height:24px;letter-spacing:-.1px}</style></template><style>@font-face{font-family:FigtreeVF;src:url(chrome-extension://majdfhpaihoncoakbjgbdhglocklcgno/fonts/FigtreeVF.woff2) format("woff2 supports variations"),url(chrome-extension://majdfhpaihoncoakbjgbdhglocklcgno/fonts/FigtreeVF.woff2) format("woff2-variations");font-weight:100 1000;font-display:swap}</style></veepn-lock-screen></body></html>

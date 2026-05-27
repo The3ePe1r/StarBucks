@@ -1,6 +1,6 @@
 @font-face {
     font-family: 'Digi Almas';
-    src: url('../fonts/Digi Almas Bold.ttf') format('truetype');
+    src: url('/fonts/Digi Almas Bold.ttf') format('truetype');
     font-weight: bold;
     font-style: normal;
     font-display: swap;
@@ -8,7 +8,7 @@
 
 @font-face {
     font-family: 'Yekan';
-    src: url('../fonts/yekan.woff') format('woff');
+    src: url('/fonts/yekan.woff') format('woff');
     font-weight: bold;
     font-style: normal;
     font-display: swap;
@@ -1158,6 +1158,7 @@ nav a:hover {
     gap: 30px;
     max-width: 1200px;
     margin: 200px auto 50px auto; 
+    margin-top: 160px;   /* قبلاً 120px بود */
     
     padding: 0 20px;
 }
@@ -1696,13 +1697,18 @@ nav a:hover {
 }
 
 
+/* استایل تب‌های حساب کاربری */
 .account-tab {
     display: none;
-
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
 }
 
 .account-tab.active {
-    display: block; 
+    display: block;
+    opacity: 1;
+    transform: translateY(0);
 }
 
 .user-details {
@@ -1793,12 +1799,13 @@ nav a:hover {
     margin: 30px 20px 0;
     border-radius: 10px;
     padding: 5px 10px;
-    color: #444;
+    background: #155724;
+    color: white;
     transition: background-color 0.3s ease;
 }
 
 #clearCartButton:hover {
-    background-color: #eebc57;
+    background-color: #f62424;
 }
 
 #noOrdersMessage {
@@ -1809,7 +1816,80 @@ nav a:hover {
     font-style: italic;
 }
 
+/* ======================== مودال‌ها ======================== */
+.modal-overlay {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0,0,0,0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10000;
+    animation: fadeInOverlay 0.2s ease;
+}
+@keyframes fadeInOverlay { from { opacity: 0; } to { opacity: 1; } }
 
+.modal-box {
+    background: white;
+    padding: 30px;
+    border-radius: 16px;
+    max-width: 420px;
+    width: 90%;
+    text-align: center;
+    box-shadow: 0 0 40px rgba(0,0,0,0.3);
+    animation: popIn 0.2s ease;
+}
+@keyframes popIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+.modal-box p { font-size: 17px; margin-bottom: 15px; }
+
+.modal-input {
+    width: 100%;
+    padding: 12px;
+    margin: 15px 0;
+    border: 2px solid #ddd;
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: 16px;
+    text-align: center;
+}
+
+.modal-buttons { 
+    margin-top: 20px; 
+    display: flex; 
+    justify-content: center; 
+    gap: 10px; 
+}
+
+/* دکمه‌های مودال (اگر کلاس‌های btn را ندارید اینجا تعریف کنید) */
+.btn-danger {
+    background: #e74c3c;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: bold;
+}
+.btn-secondary {
+    background: #6c757d;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: bold;
+}
+.btn-primary {
+    background: #0d6efd;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: bold;
+}
 
 /* services */
 .services-page {
@@ -2550,8 +2630,8 @@ nav a:hover {
 @media only screen and (max-width: 768px) {
 
     #header {
-        width: 100%;
-        top: 15px;
+        width: 95%;
+        top:30px;
     }
     .header-inner {
         display: grid;
@@ -2573,7 +2653,8 @@ nav a:hover {
     .search-box {
         grid-column: 2;    
         grid-row: 1;     
-        width: 100%;
+        width: 97%;
+        margin-top: 15px;
     }
     .search-box input {
         width: 100%;
@@ -2619,22 +2700,22 @@ nav a:hover {
     }
 
     #header.scrolled .search-box {
-        width: 80%;
+        width: 95%;
         transition: 0.4s ease;
     }
 
     
 
     .banner { 
-        margin-top: 275px;
+        margin-top: 225px;
         padding: 0 2%; 
     }
     .banner-wrapper { 
-        height: 300px; 
+        height: auto; 
         padding: 10px; 
     }
     .banner-inner img { 
-        object-fit: cover; 
+        object-fit: scale-down; 
     }
 
     .container {
@@ -2658,7 +2739,7 @@ nav a:hover {
         width: 280px; margin-right: 8px;
     }
     .super-sell-item img, .super-sell-item-1 img, .super-sell-item-2 img {
-        height: 280px;
+        height: 70%;
         border-radius: 15px;
         padding: 8px 12px 8px 8px;
     }
@@ -2712,12 +2793,12 @@ nav a:hover {
     .footer-contact .contact-item { 
         justify-content: flex-start; 
         padding-left: 50px; 
-        margin-right: 75px;
+        margin-right: 40px;
     }
     .footer-social .social-icons { 
         justify-content: flex-start; 
         padding-left: 50px;
-        margin-right: 60px; 
+        margin-right: 40px; 
     }
     .price-box { 
         width: 90%; 
@@ -3237,3 +3318,245 @@ nav a:hover {
 
 }
 
+@media (max-width: 768px) {
+    .auth-page-wrapper {
+        flex-direction: column;
+        padding: 15px;
+        margin-top: 200px;
+    }
+
+    .sidebar-menu {
+        width: 100%;
+        padding: 0;
+        margin: 0 0 25px 0;
+        background: none;
+        background-color: #f8f9fa; 
+        padding: 15px;
+        border-radius: 12px;
+        margin-bottom: 20px;
+    }
+
+    .sidebar-menu h3 {
+        display: none; 
+    }
+
+    .sidebar-menu ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+    }
+
+    .sidebar-menu ul li {
+        margin: 0;
+    }
+
+    .sidebar-menu ul li a {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 14px 10px;
+        background: #f0f2f5;
+        border-radius: 12px;
+        font-size: 14px;
+        font-weight: 600;
+        color: #333;
+        text-decoration: none;
+        min-height: 55px;
+        word-break: break-word;
+        transition: background 0.2s;
+    }
+
+    .sidebar-menu ul li a.active-menu-item {
+        background: #1E3A34;
+        color: #fff;
+    }
+
+    .sidebar-menu ul li:last-child a {
+        background: #ffeaea;
+        color: #c0392b;
+    }
+
+    .account-content {
+        width: 100%;
+        padding: 20px 15px;
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.03);
+        overflow-x: auto;
+    }
+
+    .account-tab {
+        display: none;
+    }
+
+    .account-tab.active {
+        display: block;
+    }
+
+    .account-tab h2 {
+        font-size: 20px;
+        margin-bottom: 15px;
+    }
+
+    .order-history-table-container table {
+        font-size: 13px;
+        width: 10%;
+        min-width: 150px;
+    }
+
+    .order-history-table-container th,
+    .order-history-table-container td {
+        padding: 10px 12px;
+    }
+
+    .account-form .form-group {
+        margin-bottom: 16px;
+    }
+
+    .account-form input {
+        width: 100%;
+        padding: 12px;
+        font-size: 15px;
+    }
+
+    .account-form .btn {
+        width: 100%;
+        padding: 14px;
+        font-size: 16px;
+        margin-top: 10px;
+    }
+
+    #clearCartButton {
+        width: 50%;
+        text-align: center;
+        padding: 12px;
+        background: #e74c3c;
+        color: white;
+        border-radius: 10px;
+        margin-top: 15px;
+        cursor: pointer;
+        font-weight: bold;
+    }
+    .sidebar-menu ul li a {
+        position: relative;
+        z-index: 1;
+    }
+}
+
+#productDescription,
+#fullDescription {
+    white-space: pre-line;
+}
+
+
+
+
+/* ==================== صفحات قهوه و کیک – کارت‌های گرم و باکس‌دار ==================== */
+.category-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 25px;
+    justify-content: center;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* کارت اصلی */
+.cozy-card {
+    background: linear-gradient(135deg, #f9e0c0, #f5d5a0); /* پس‌زمینه طلایی-کرم */
+    border: 1px solid #e5d5c0;         /* حاشیه قهوه‌ای کم‌رنگ */
+    border-radius: 20px;
+    padding: 0 0 20px 0;
+    width: 280px;
+    text-decoration: none;
+    color: #4A3F35;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.04);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.cozy-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.08);
+}
+
+/* تصویر محصول */
+.cozy-card img {
+    width: 100%;
+    height: 210px;
+    object-fit: cover;
+    border-bottom: 3px solid #d4a373;   /* خط جداکنندهٔ رنگی */
+}
+
+/* بخش اطلاعات */
+.cozy-card .card-body {
+    padding: 15px 20px 0 20px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.cozy-card .card-body h3 {
+    font-size: 20px;
+    font-weight: 700;
+    color: #4A3F35;
+    margin: 0 0 10px 0;
+}
+
+.cozy-card .card-body .category-price {
+    font-size: 18px;
+    font-weight: bold;
+    color: #27ae60;
+    background: #eafaf1;
+    padding: 5px 15px;
+    border-radius: 20px;
+    margin-bottom: 15px;
+}
+
+/* دکمه */
+.cozy-card .card-body .view-btn {
+    display: inline-block;
+    background: #4A3F35;
+    color: white;
+    padding: 8px 22px;
+    border-radius: 25px;
+    font-size: 14px;
+    font-weight: bold;
+    transition: 0.3s;
+    margin-top: auto;
+}
+
+.cozy-card .card-body .view-btn:hover {
+    background: #6A5A4B;
+}
+
+/* ریسپانسیو */
+@media (max-width: 768px) {
+    .cozy-card {
+        width: 90%;
+        max-width: 320px;
+    }
+}
+
+/* ==================== باکس عنوان صفحات قهوه و کیک ==================== */
+.category-title {
+    display: inline-block;
+    background: linear-gradient(135deg, #f9e0c0, #f5d5a0); /* پس‌زمینه طلایی-کرم */
+    color: #4A3F35;                   /* متن قهوه‌ای تیره */
+    padding: 12px 35px;
+    border-radius: 30px;
+    font-size: 28px;
+    font-weight: 700;
+    margin: 0 auto 30px auto;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    border: 2px solid #d4a373;        /* حاشیه قهوه‌ای روشن */
+    letter-spacing: 1px;
+}
