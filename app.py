@@ -16,7 +16,12 @@ import secrets
 # -------------------- تنظیمات Flask --------------------
 app = Flask(__name__, static_folder='static', static_url_path='/static')
 app.config['SECRET_KEY'] = 'starbox-secret-key-change-me'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:@localhost/starbox_db'
+DB_HOST = 'sql12.freesqldatabase.com'
+DB_PORT = '3306'
+DB_NAME = 'sql12828458'
+DB_USER = 'sql12828458'
+DB_PASS = 'w7KsA6LF7k'
+app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql+pymysql://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{DB_NAME}'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['REMEMBER_COOKIE_HTTPONLY'] = True
 app.config['SESSION_COOKIE_HTTPONLY'] = True
