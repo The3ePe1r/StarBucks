@@ -84,6 +84,10 @@ The store will be available at `http://localhost:5000`.
 ### Admin Panel
 Visit `/admin` and enter the password `123456` (configurable in `app.py`).
 
+## 🚀 Live Demo
+
+Check out the live site: [Website Demo](https://starbucks-z08i.onrender.com)
+
 ---
 
 ## 📁 Project Structure
