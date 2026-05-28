@@ -1,4 +1,4 @@
-# ☕️ Starbox – Online Coffee & Cake Store
+# ☕️ Starbucks – Online Coffee & Cake Store
 
 ![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white)
 ![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white)
@@ -7,7 +7,7 @@
 ![Flask](https://img.shields.io/badge/Flask-3.x-green?style=for-the-badge&logo=flask&logoColor=white)
 ![MySQL](https://img.shields.io/badge/MySQL-8.x-orange?style=for-the-badge&logo=mysql&logoColor=white)
 
-**Starbox** is a full‑stack, responsive online store for coffee and cakes, built with **Flask** on the backend, **MySQL** for data persistence, and pure **HTML/CSS/JS** on the frontend.  
+**Starbucks** is a full‑stack, responsive online store for coffee and cakes, built with **Flask** on the backend, **MySQL** for data persistence, and pure **HTML/CSS/JS** on the frontend.  
 The project is designed entirely in Persian (RTL) and provides a complete shopping experience with product management, user accounts, a live support ticket system, and a modern glass‑morphism UI.
 
 ---
@@ -66,12 +66,12 @@ The project is designed entirely in Persian (RTL) and provides a complete shoppi
 ### Prerequisites
 - Python 3.9 or higher
 - MySQL server running (e.g., XAMPP locally)
-- An empty database named `starbox_db`
+- An empty database named `starbucks_db`
 
 ### Installation
 
 ```bash
-git clone https://github.com/SEPEHRRGB/starbox.git
+git clone https://github.com/The3ePe1r/starbucks.git
 cd starbox
 python -m venv venv
 venv\Scripts\activate   # Windows — or: source venv/bin/activate (Linux/macOS)
