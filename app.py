@@ -21,7 +21,7 @@ DB_PORT = '3306'
 DB_NAME = 'sql12828458'
 DB_USER = 'sql12828458'
 DB_PASS = 'w7KsA6LF7k'
-app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql+pymysql://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{DB_NAME}'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://sql12828458:w7KsA6LF7k@sql12.freesqldatabase.com:3306/sql12828458?charset=utf8mb4'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['REMEMBER_COOKIE_HTTPONLY'] = True
 app.config['SESSION_COOKIE_HTTPONLY'] = True
