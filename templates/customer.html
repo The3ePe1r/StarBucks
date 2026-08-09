@@ -3,148 +3,1049 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" type="image/png" href="../static/images/image.png">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="icon" type="image/png" href="/images/image.png">
     <title>پرتال مشتریان | استارباکس</title>
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body {
-            font-family: 'vazir','Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #f0f2f5;
-            padding: 20px;
-            direction: rtl;
+        .customer-wrapper {
+            max-width: 1200px;
+            margin: 180px auto 50px;
+            padding: 0 20px;
         }
-        .portal-wrapper {
-            max-width: 850px;
-            margin: 30px auto;
-        }
-        .header {
-            text-align: center;
-            margin-bottom: 35px;
-        }
-        .header h2 { font-size: 32px; color: #2c3e50; margin-bottom: 5px; }
-        .header p { color: #7f8c8d; font-size: 16px; }
 
-        .search-card {
-            background: white;
+        .customer-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-bottom: 40px;
+            background: linear-gradient(135deg, #fff, #faf8f5);
+            padding: 25px 35px;
             border-radius: 20px;
-            padding: 30px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.05);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.06);
+            border: 1px solid #f0e8d8;
+        }
+
+        .customer-header-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .customer-header-left .icon-wrapper {
+            width: 55px;
+            height: 55px;
+            background: linear-gradient(135deg, #1E3A34, #2d5a4a);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .customer-header-left .icon-wrapper svg {
+            width: 30px;
+            height: 30px;
+            fill: white;
+        }
+
+        .customer-header-left h1 {
+            font-family: 'Digi Almas', 'Vazir', sans-serif;
+            color: #1E3A34;
+            font-size: 28px;
+            margin: 0;
+        }
+
+        .customer-header-left .subtitle {
+            color: #95a5a6;
+            font-size: 14px;
+            margin-top: 2px;
+        }
+
+        .user-badge {
+            background: linear-gradient(135deg, #f9e0c0, #f5d5a0);
+            padding: 10px 22px;
+            border-radius: 30px;
+            font-weight: 600;
+            color: #4A3F35;
+            border: 2px solid #d4a373;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 15px;
+        }
+
+        .user-badge .online-dot {
+            width: 10px;
+            height: 10px;
+            background: #27ae60;
+            border-radius: 50%;
+            display: inline-block;
+            animation: pulse 2s infinite;
+        }
+
+        .user-badge svg {
+            width: 18px;
+            height: 18px;
+            fill: #4A3F35;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.6; transform: scale(0.8); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+
+        .customer-actions {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .btn-customer {
+            padding: 12px 28px;
+            border: none;
+            border-radius: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: inherit;
+            font-size: 15px;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-customer svg {
+            width: 20px;
+            height: 20px;
+            fill: currentColor;
+            flex-shrink: 0;
+        }
+
+        .btn-customer-primary {
+            background: linear-gradient(135deg, #1E3A34, #2d5a4a);
+            color: white;
+            box-shadow: 0 4px 15px rgba(30,58,52,0.2);
+        }
+        .btn-customer-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(30,58,52,0.35);
+        }
+
+        .btn-customer-success {
+            background: linear-gradient(135deg, #27ae60, #2ecc71);
+            color: white;
+            box-shadow: 0 4px 15px rgba(39,174,96,0.2);
+        }
+        .btn-customer-success:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(39,174,96,0.35);
+        }
+
+        .btn-customer-danger {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: white;
+            box-shadow: 0 4px 15px rgba(231,76,60,0.2);
+        }
+        .btn-customer-danger:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(231,76,60,0.35);
+        }
+
+        .btn-customer-secondary {
+            background: linear-gradient(135deg, #95a5a6, #7f8c8d);
+            color: white;
+        }
+        .btn-customer-secondary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(149,165,166,0.35);
+        }
+
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
             margin-bottom: 30px;
         }
-        .search-box label { font-weight: 600; display: block; margin-bottom: 10px; color: #2c3e50; font-size: 16px; }
-        .search-input-group { display: flex; gap: 10px; }
-        .search-input-group input {
-            flex: 1;
-            padding: 14px 15px;
-            border: 2px solid #e0e6ed;
+
+        .stat-card {
+            background: white;
+            padding: 18px 22px;
+            border-radius: 14px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.04);
+            border: 1px solid #f0e8d8;
+        }
+
+        .stat-card .number {
+            font-size: 28px;
+            font-weight: 800;
+            color: #1E3A34;
+            display: block;
+        }
+
+        .stat-card .label {
+            font-size: 13px;
+            color: #95a5a6;
+            margin-top: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+        }
+
+        .stat-card .label svg {
+            width: 16px;
+            height: 16px;
+            fill: #95a5a6;
+        }
+
+        .stat-card.open-stat .number { color: #3498db; }
+        .stat-card.progress-stat .number { color: #f39c12; }
+        .stat-card.closed-stat .number { color: #27ae60; }
+
+        .ticket-form-card {
+            background: white;
+            border-radius: 20px;
+            padding: 35px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.06);
+            margin-bottom: 35px;
+            display: none;
+            animation: slideDown 0.4s ease;
+            border: 2px solid #f0e8d8;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .ticket-form-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 5px;
+            height: 100%;
+            background: linear-gradient(to bottom, #1E3A34, #2d5a4a);
+            border-radius: 0 3px 3px 0;
+        }
+
+        .ticket-form-card.open {
+            display: block;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-30px) scale(0.98); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        .ticket-form-card h3 {
+            font-family: 'Digi Almas', 'Vazir', sans-serif;
+            color: #1E3A34;
+            font-size: 24px;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0e8d8;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .ticket-form-card h3 svg {
+            width: 28px;
+            height: 28px;
+            fill: #1E3A34;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            color: #4A3F35;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .form-group label .required {
+            color: #e74c3c;
+            margin-right: 3px;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e8ddd0;
             border-radius: 12px;
             font-size: 15px;
             transition: all 0.3s;
-            background: #fafbfc;
+            background: #faf8f5;
             font-family: inherit;
         }
-        .search-input-group input:focus {
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
             outline: none;
-            border-color: #3498db;
+            border-color: #1E3A34;
             background: white;
-            box-shadow: 0 0 0 3px rgba(52,152,219,0.1);
+            box-shadow: 0 0 0 4px rgba(30,58,52,0.08);
         }
-        .search-input-group button {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-            border: none;
-            padding: 0 25px;
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+
+        .form-message-customer {
+            margin-top: 15px;
+            padding: 12px 20px;
             border-radius: 12px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s;
-            font-family: inherit;
+            display: none;
+            font-weight: 500;
         }
-        .search-input-group button:hover { opacity: 0.9; transform: translateY(-1px); }
-        .search-hint { font-size: 13px; color: #95a5a6; margin-top: 10px; }
+
+        .form-message-customer.success {
+            display: block;
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .form-message-customer.error {
+            display: block;
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
 
         .ticket-card {
             background: white;
             border-radius: 16px;
-            padding: 25px;
-            margin-bottom: 20px;
+            padding: 30px;
+            margin-bottom: 25px;
             box-shadow: 0 5px 20px rgba(0,0,0,0.05);
-            border-right: 5px solid #3498db;
-            transition: 0.2s;
+            border-right: 6px solid #1E3A34;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
         }
-        .ticket-card.closed { border-right-color: #95a5a6; opacity: 0.75; }
-        .ticket-card:hover { box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
-        .ticket-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; }
-        .ticket-id { font-family: 'Courier New', monospace; font-weight: bold; background: #ecf0f1; padding: 5px 12px; border-radius: 8px; font-size: 14px; }
-        .ticket-date { color: #7f8c8d; font-size: 14px; }
-        .status-badge { display: inline-block; padding: 5px 14px; border-radius: 20px; font-size: 13px; font-weight: bold; }
-        .status-open { background: #3498db; color: white; }
-        .status-in-progress { background: #f39c12; color: white; }
-        .status-closed { background: #7f8c8d; color: white; }
-        .ticket-subject { font-size: 18px; font-weight: 600; color: #2c3e50; margin: 10px 0; }
-        .ticket-detail { color: #555; line-height: 1.6; }
-        .replies-section { margin-top: 20px; background: #f8f9fa; border-radius: 12px; padding: 15px; }
-        .reply-bubble { background: white; border-radius: 12px; padding: 12px 15px; margin: 8px 0; border-right: 4px solid #3498db; font-size: 14px; }
-        .reply-bubble.admin { border-right-color: #e74c3c; background: #fdf2f2; }
-        .reply-author { font-weight: bold; font-size: 13px; margin-bottom: 5px; }
-        .reply-date { font-size: 11px; color: #999; }
-        .reply-form { margin-top: 15px; display: flex; gap: 10px; align-items: flex-start; }
+
+        .ticket-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(to right, #1E3A34, #2d5a4a, #1E3A34);
+            opacity: 0.3;
+        }
+
+        .ticket-card:hover {
+            box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+            transform: translateY(-3px);
+        }
+
+        .ticket-card.closed {
+            border-right-color: #95a5a6;
+            opacity: 0.85;
+        }
+
+        .ticket-card.closed::after {
+            background: linear-gradient(to right, #95a5a6, #bdc3c7, #95a5a6);
+        }
+
+        .ticket-card.closed:hover {
+            opacity: 1;
+        }
+
+        .ticket-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+
+        .ticket-header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .ticket-id {
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            background: #f0e8d8;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            color: #4A3F35;
+        }
+
+        .ticket-date {
+            color: #95a5a6;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .ticket-date svg {
+            width: 16px;
+            height: 16px;
+            fill: #95a5a6;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 5px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .status-open {
+            background: #3498db;
+            color: white;
+        }
+        .status-in-progress {
+            background: #f39c12;
+            color: white;
+        }
+        .status-closed {
+            background: #95a5a6;
+            color: white;
+        }
+
+        .priority-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 3px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .priority-badge svg {
+            width: 14px;
+            height: 14px;
+            fill: currentColor;
+        }
+
+        .priority-low { background: #d5f5e3; color: #1a7a42; }
+        .priority-normal { background: #fdebd0; color: #a04000; }
+        .priority-high { background: #fadbd8; color: #922b21; }
+
+        .ticket-subject {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1E3A34;
+            margin: 12px 0 10px;
+        }
+
+        .ticket-detail {
+            color: #444;
+            line-height: 1.9;
+            background: #faf8f5;
+            padding: 18px 22px;
+            border-radius: 12px;
+            margin: 12px 0 18px;
+        }
+
+        .ticket-detail .detail-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-bottom: 12px;
+            padding-bottom: 12px;
+            border-bottom: 1px dashed #e8ddd0;
+        }
+
+        .ticket-detail .detail-row:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .ticket-detail .detail-label {
+            font-weight: 600;
+            color: #1E3A34;
+            min-width: 60px;
+            display: inline-block;
+        }
+
+        .ticket-detail .detail-value {
+            color: #555;
+        }
+
+        .ticket-detail .message-box {
+            background: white;
+            padding: 14px 18px;
+            border-radius: 10px;
+            border-right: 4px solid #d4a373;
+            margin-top: 8px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            font-size: 15px;
+            line-height: 1.9;
+            color: #333;
+        }
+
+        .replies-section {
+            margin-top: 20px;
+            background: #f8f6f2;
+            border-radius: 14px;
+            padding: 20px 22px;
+            border: 1px solid #f0e8d8;
+        }
+
+        .replies-section .replies-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #f0e8d8;
+        }
+
+        .replies-section .replies-header strong {
+            color: #1E3A34;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .replies-section .replies-header strong svg {
+            width: 20px;
+            height: 20px;
+            fill: #1E3A34;
+        }
+
+        .replies-section .reply-count {
+            font-size: 13px;
+            color: #95a5a6;
+            background: white;
+            padding: 3px 14px;
+            border-radius: 20px;
+            border: 1px solid #e8ddd0;
+        }
+
+        .reply-bubble {
+            background: white;
+            border-radius: 14px;
+            padding: 14px 20px;
+            margin: 12px 0;
+            border-right: 4px solid #1E3A34;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            transition: all 0.2s;
+        }
+
+        .reply-bubble:hover {
+            box-shadow: 0 4px 16px rgba(0,0,0,0.07);
+        }
+
+        .reply-bubble.admin {
+            border-right-color: #e74c3c;
+            background: #fdf6f5;
+        }
+
+        .reply-bubble .reply-author {
+            font-weight: 700;
+            font-size: 14px;
+            margin-bottom: 8px;
+            color: #1E3A34;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .reply-bubble .reply-author svg {
+            width: 18px;
+            height: 18px;
+            fill: #1E3A34;
+        }
+
+        .reply-bubble .reply-author .author-badge {
+            font-size: 10px;
+            background: #1E3A34;
+            color: white;
+            padding: 2px 12px;
+            border-radius: 12px;
+            font-weight: 600;
+        }
+
+        .reply-bubble.admin .reply-author .author-badge {
+            background: #e74c3c;
+        }
+
+        .reply-bubble .reply-text {
+            font-size: 15px;
+            line-height: 1.9;
+            color: #444;
+            padding: 4px 0;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .reply-bubble .reply-date {
+            font-size: 11px;
+            color: #b0a8a0;
+            margin-top: 8px;
+            padding-top: 6px;
+            border-top: 1px dashed #f0e8d8;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .reply-bubble .reply-date svg {
+            width: 14px;
+            height: 14px;
+            fill: #b0a8a0;
+        }
+
+        .reply-form {
+            margin-top: 18px;
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+            background: white;
+            padding: 15px;
+            border-radius: 14px;
+            border: 2px solid #f0e8d8;
+        }
+
         .reply-form textarea {
             flex: 1;
-            padding: 12px;
-            border-radius: 12px;
-            border: 2px solid #e0e6ed;
+            padding: 12px 16px;
+            border-radius: 10px;
+            border: 2px solid #e8ddd0;
             resize: vertical;
             font-family: inherit;
+            min-height: 55px;
+            background: #faf8f5;
+            transition: all 0.3s;
+            font-size: 14px;
+            line-height: 1.6;
         }
+
+        .reply-form textarea:focus {
+            outline: none;
+            border-color: #1E3A34;
+            background: white;
+            box-shadow: 0 0 0 4px rgba(30,58,52,0.06);
+        }
+
+        .reply-form textarea::placeholder {
+            color: #b0a8a0;
+        }
+
         .reply-form button {
-            background: #2ecc71;
+            background: linear-gradient(135deg, #27ae60, #2ecc71);
             border: none;
             color: white;
-            padding: 12px 20px;
-            border-radius: 12px;
-            font-weight: bold;
+            padding: 12px 28px;
+            border-radius: 10px;
+            font-weight: 700;
             cursor: pointer;
             font-family: inherit;
+            white-space: nowrap;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(39,174,96,0.2);
+            font-size: 14px;
+            min-height: 55px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
-        .no-ticket { text-align: center; padding: 50px; color: #7f8c8d; font-size: 18px; }
 
-        .back-home {
-            text-align: center;
-            margin-top: 20px;
+        .reply-form button svg {
+            width: 18px;
+            height: 18px;
+            fill: currentColor;
         }
-        .back-home a {
-            color: #3498db;
+
+        .reply-form button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(39,174,96,0.35);
+        }
+
+        .reply-form button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .no-reply-message {
+            color: #b0a8a0;
+            font-size: 14px;
+            text-align: center;
+            padding: 15px;
+            background: white;
+            border-radius: 10px;
+            border: 1px dashed #e8ddd0;
+        }
+
+        .ticket-closed-badge {
+            margin-top: 15px;
+            padding: 12px 20px;
+            background: #f8f6f2;
+            border-radius: 12px;
+            color: #95a5a6;
+            font-size: 14px;
+            text-align: center;
+            border: 1px solid #e8ddd0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .ticket-closed-badge svg {
+            width: 18px;
+            height: 18px;
+            fill: #95a5a6;
+        }
+
+        .no-ticket {
+            text-align: center;
+            padding: 60px 20px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+            border: 2px dashed #e8ddd0;
+        }
+
+        .no-ticket svg {
+            width: 64px;
+            height: 64px;
+            fill: #95a5a6;
+            margin-bottom: 20px;
+        }
+
+        .no-ticket h3 {
+            font-family: 'Digi Almas', 'Vazir', sans-serif;
+            color: #1E3A34;
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+        .no-ticket p {
+            color: #95a5a6;
+            font-size: 16px;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        .loading-tickets {
+            text-align: center;
+            padding: 60px 20px;
+            color: #95a5a6;
+        }
+
+        .loading-tickets .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f0e8d8;
+            border-top-color: #1E3A34;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 15px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 30px;
+            color: #1E3A34;
             text-decoration: none;
-            font-weight: bold;
+            font-weight: 600;
+            transition: all 0.3s;
+            padding: 10px 20px;
+            border-radius: 12px;
+            background: #faf8f5;
+        }
+
+        .back-link svg {
+            width: 20px;
+            height: 20px;
+            fill: currentColor;
+        }
+
+        .back-link:hover {
+            background: #1E3A34;
+            color: white;
+            transform: translateX(-5px);
+        }
+
+        @media (max-width: 768px) {
+            .customer-wrapper {
+                margin-top: 200px;
+            }
+
+            .customer-header {
+                flex-direction: column;
+                align-items: stretch;
+                text-align: center;
+                padding: 20px;
+            }
+
+            .customer-header-left {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .customer-actions {
+                justify-content: center;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .ticket-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .ticket-header-left {
+                flex-direction: column;
+                align-items: flex-start;
+                width: 100%;
+            }
+
+            .reply-form {
+                flex-direction: column;
+            }
+
+            .reply-form button {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .ticket-form-card {
+                padding: 20px;
+            }
+
+            .stats-row {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 10px;
+            }
+
+            .stat-card .number {
+                font-size: 20px;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="portal-wrapper">
-        <div class="header">
-            <h2>📋 پرتال مشتریان</h2>
-            <p>وضعیت تیکت‌های خود را پیگیری کنید</p>
-        </div>
 
-        <div class="search-card">
-            <div class="search-box">
-                <label>ایمیل یا شناسه تیکت خود را وارد کنید:</label>
-                <div class="search-input-group">
-                    <input type="text" id="searchQuery" placeholder="example@domain.com یا TKT-XXXXX">
-                    <button id="searchBtn">جستجو</button>
-                </div>
-                <div class="search-hint">🔍 با ایمیل (همه تیکت‌هایتان) یا شناسه (یک تیکت خاص) جستجو کنید</div>
+<header id="header">
+    <div class="header-inner">
+        <div class="logo">
+            <a href="/home"><img src="/images/image.png" alt="لوگو"></a>
+        </div>
+        <div class="search-box">
+            <input type="text" id="searchInput" placeholder="جستوجوی محصولات">
+            <div id="searchResults" class="search-results"></div>
+        </div>
+        <nav id="buttons">
+            <a href="/home">خانه</a>
+            <a href="/about">درباره</a>
+            <a href="/products">محصولات</a>
+            <a href="/contact">تماس</a>
+            <a href="/login" id="loginStatusLink">ورود / ثبت نام</a>
+        </nav>
+    </div>
+</header>
+
+<div class="customer-wrapper">
+    <div class="customer-header">
+        <div class="customer-header-left">
+            <div class="icon-wrapper">
+                <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H5.17L4 17.17V4h16v12zM6 12h12v2H6zm0-3h12v2H6zm0-3h12v2H6z"/></svg>
+            </div>
+            <div>
+                <h1>پرتال پشتیبانی</h1>
+                <div class="subtitle">مدیریت تیکت‌های پشتیبانی شما</div>
             </div>
         </div>
-
-        <div id="ticketsContainer"></div>
-
-        <div class="back-home">
-            <a href="/home.html">← بازگشت به صفحه اصلی</a>
+        <div style="display:flex; align-items:center; gap:15px; flex-wrap:wrap;">
+            <span class="user-badge" id="userDisplay">
+                <span class="online-dot"></span>
+                در حال بارگذاری...
+            </span>
+            <div class="customer-actions">
+                <button id="newTicketBtn" class="btn-customer btn-customer-primary">
+                    <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+                    تیکت جدید
+                </button>
+            </div>
         </div>
     </div>
 
-    <script src="/js/script.js"></script>
+    <div class="stats-row" id="statsRow">
+        <div class="stat-card open-stat">
+            <span class="number" id="openCount">0</span>
+            <span class="label">
+                <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+                باز
+            </span>
+        </div>
+        <div class="stat-card progress-stat">
+            <span class="number" id="progressCount">0</span>
+            <span class="label">
+                <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm1-13h-2v6l5.25 3.15L17 12.23l-4-2.37V7z"/></svg>
+                در حال بررسی
+            </span>
+        </div>
+        <div class="stat-card closed-stat">
+            <span class="number" id="closedCount">0</span>
+            <span class="label">
+                <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+                بسته شده
+            </span>
+        </div>
+    </div>
+
+    <div class="ticket-form-card" id="ticketFormCard">
+        <h3>
+            <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+            ثبت تیکت جدید
+        </h3>
+        <form id="newTicketForm">
+            <div class="form-group">
+                <label>موضوع تیکت <span class="required">*</span></label>
+                <input type="text" id="ticketSubject" placeholder="موضوع را وارد کنید..." required>
+            </div>
+            <div class="form-group">
+                <label>شرح مشکل <span class="required">*</span></label>
+                <textarea id="ticketMessage" placeholder="مشکل خود را به طور کامل توضیح دهید..." required></textarea>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>اولویت</label>
+                    <select id="ticketPriority">
+                        <option value="low">کم</option>
+                        <option value="normal" selected>معمولی</option>
+                        <option value="high">بالا</option>
+                    </select>
+                </div>
+                <div class="form-group" style="display:flex; align-items:flex-end; justify-content:flex-end;">
+                    <div class="form-actions">
+                        <button type="submit" class="btn-customer btn-customer-success">
+                            <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+                            ارسال تیکت
+                        </button>
+                        <button type="button" id="cancelTicketBtn" class="btn-customer btn-customer-secondary">
+                            <svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+                            انصراف
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </form>
+        <div id="ticketFormMessage" class="form-message-customer"></div>
+    </div>
+
+    <div id="ticketsContainer">
+        <div class="loading-tickets">
+            <div class="spinner"></div>
+            <span>در حال بارگذاری تیکت‌ها...</span>
+        </div>
+    </div>
+
+    <a href="/home" class="back-link">
+        <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+        بازگشت به صفحه اصلی
+    </a>
+</div>
+
+<footer class="footer">
+    <div class="footer-content">
+        <div class="footer-logo">
+            <img src="/images/image.png" alt="لوگوی استارباکس">
+            <h1>استارباکس</h1>
+            <p class="tagline">قهوه، فراتر از یک نوشیدنی...</p>
+        </div>
+        <div class="footer-contact">
+            <h2>تماس با ما</h2>
+            <div class="contact-item">
+                <img src="/images/phone.svg" alt="شماره تماس">
+                <a href="tel:09123456789">0912-3456789</a>
+            </div>
+            <div class="contact-item">
+                <img src="/images/email.svg" alt="ایمیل">
+                <a href="mailto:info@starbucks.com">info@starbucks.com</a>
+            </div>
+        </div>
+        <div class="footer-social">
+            <h2>ما را دنبال کنید</h2>
+            <ul class="social-icons">
+                <li><a href="#"><img src="/images/telegram.svg" alt="تلگرام"></a></li>
+                <li><a href="#"><img src="/images/instagram.svg" alt="اینستاگرام"></a></li>
+                <li><a href="#"><img src="/images/youtube.svg" alt="یوتیوب"></a></li>
+                <li><a href="#"><img src="/images/whatsapp.svg" alt="واتساپ"></a></li>
+            </ul>
+        </div>
+        <div class="perms">
+            <h2>مجوز ها</h2>
+            <a href="https://trustseal.enamad.ir/?id=448759&code=9W3fhatiIliXLE8QdR7PBHBcCrCcAeWt"><img src="/images/enamad.png" alt="اینماد"></a>
+            <a href=""><img src="/images/samandehi.png" alt="ساماندهی"></a>
+        </div>
+    </div>
+    <div class="copyright">
+        <p>&copy; 2026 استارباکس ایران. کلیه حقوق محفوظ است.</p>
+    </div>
+</footer>
+
+<div id="confirmModal" class="modal-overlay" style="display: none;">
+    <div class="modal-box">
+        <p id="confirmModalMessage">آیا مطمئن هستید؟</p>
+        <div class="modal-buttons">
+            <button id="confirmYes" class="btn btn-danger">بله</button>
+            <button id="confirmNo" class="btn btn-secondary">خیر</button>
+        </div>
+    </div>
+</div>
+
+<div id="alertModal" class="modal-overlay" style="display: none;">
+    <div class="modal-box">
+        <p id="alertModalMessage">پیغام</p>
+        <div class="modal-buttons">
+            <button id="alertOk" class="btn btn-primary">باشه</button>
+        </div>
+    </div>
+</div>
+
+<script src="/js/script.js"></script>
 </body>
 </html>

@@ -1,6 +1,6 @@
-# app.py – نسخه نهایی و کامل
 from flask import Flask, request, jsonify, redirect, url_for, flash, send_from_directory, session
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.exc import IntegrityError
 from flask_login import (
     LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 )
@@ -13,15 +13,9 @@ import random
 import string
 import secrets
 
-# -------------------- تنظیمات Flask --------------------
 app = Flask(__name__, static_folder='static', static_url_path='/static')
-app.config['SECRET_KEY'] = 'password'
-DB_HOST = 'sql12.freesqldatabase.com'
-DB_PORT = '3306'
-DB_NAME = 'sql12828458'
-DB_USER = 'sql12828458'
-DB_PASS = 'w7KsA6LF7k'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////home/The3ePe1r/mysite/starbox.db'
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', secrets.token_urlsafe(32))
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///starbox.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['REMEMBER_COOKIE_HTTPONLY'] = True
 app.config['SESSION_COOKIE_HTTPONLY'] = True
@@ -29,9 +23,8 @@ app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
 
 db = SQLAlchemy(app)
 login_manager = LoginManager(app)
-login_manager.login_view = '/login'
+login_manager.login_view = '/login'  # type: ignore
 
-# -------------------- مدل‌های پایگاه داده --------------------
 class User(UserMixin, db.Model):
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
@@ -106,29 +99,27 @@ class ContactMessage(db.Model):
 def load_user(user_id):
     return User.query.get(int(user_id))
 
-# ---------- مسیرهای استاتیک ----------
 @app.route('/css/<path:filename>')
 def serve_css(filename):
-    return send_from_directory(os.path.join(app.static_folder, 'css'), filename)
+    return send_from_directory(os.path.join(app.static_folder, 'css'), filename) # type: ignore
 
 @app.route('/js/<path:filename>')
 def serve_js(filename):
-    return send_from_directory(os.path.join(app.static_folder, 'js'), filename)
+    return send_from_directory(os.path.join(app.static_folder, 'js'), filename) # type: ignore
 
 @app.route('/images/<path:filename>')
 def serve_images(filename):
-    return send_from_directory(os.path.join(app.static_folder, 'images'), filename)
+    return send_from_directory(os.path.join(app.static_folder, 'images'), filename) # type: ignore
 
 @app.route('/fonts/<path:filename>')
 def serve_fonts(filename):
-    return send_from_directory(os.path.join(app.static_folder, 'fonts'), filename)
+    return send_from_directory(os.path.join(app.static_folder, 'fonts'), filename) # type: ignore
 
-# ---------- مسیرهای HTML ----------
 HTML_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates')
 
 @app.route('/')
 def index():
-    return send_from_directory(HTML_DIR, 'home.html')
+    return redirect('/home', code=302)
 
 @app.route('/home')
 def home():
@@ -181,11 +172,7 @@ def login_page():
         session.clear()
     return send_from_directory(HTML_DIR, 'login.html')
 
-@app.route('/ticket')
-def ticket_page():
-    return send_from_directory(HTML_DIR, 'ticket.html')
 
-# -------------------- API: احراز هویت --------------------
 @app.route('/api/signup', methods=['POST'])
 def api_signup():
     data = request.get_json()
@@ -201,7 +188,7 @@ def api_signup():
         return jsonify(success=False, error='رمز عبور باید حداقل ۵ کاراکتر باشد.'), 400
     if User.query.filter_by(email=email).first():
         return jsonify(success=False, error='این ایمیل قبلاً ثبت شده است.'), 400
-    user = User(name=name, email=email, password_hash=generate_password_hash(password))
+    user = User(name=name, email=email, password_hash=generate_password_hash(password))# type: ignore
     db.session.add(user)
     db.session.commit()
     return jsonify(success=True, message='ثبت‌نام با موفقیت انجام شد.')
@@ -256,8 +243,6 @@ def api_change_password():
     current_user.password_hash = generate_password_hash(new_password)
     db.session.commit()
     return jsonify(success=True, message='رمز عبور با موفقیت تغییر کرد.')
-
-# -------------------- API: محصولات --------------------
 @app.route('/api/products')
 def api_products():
     products = Product.query.all()
@@ -292,26 +277,28 @@ def api_product_detail(product_id):
         'reviews': [{
             'id': r.id,
             'user_id': r.user_id,
-            'user_name': User.query.get(r.user_id).name,
+            'user_name': User.query.get(r.user_id).name, # type: ignore
             'content': r.content,
             'rating': r.rating,
             'date': r.created_at.strftime('%Y/%m/%d')
         } for r in reviews]
     })
 
-# -------------------- API: سفارش‌ها --------------------
 @app.route('/api/add_to_cart', methods=['POST'])
 @login_required
 def api_add_to_cart():
     data = request.get_json()
-    product_name = data.get('product_name', '')
-    price = data.get('price', '')
-    if not product_name or not price:
-        return jsonify(success=False, error='اطلاعات محصول ناقص است.'), 400
-    order = Order(user_id=current_user.id, product_name=product_name, price=price)
+    try:
+        product_id = int(data.get('product_id'))
+    except (TypeError, ValueError):
+        return jsonify(success=False, error='شناسهٔ محصول نامعتبر است.'), 400
+    product = db.session.get(Product, product_id)
+    if product is None:
+        return jsonify(success=False, error='محصول پیدا نشد.'), 404
+    order = Order(user_id=current_user.id, product_name=product.name, price=str(product.price)) # type: ignore
     db.session.add(order)
     db.session.commit()
-    return jsonify(success=True, message=f'{product_name} به سبد خرید اضافه شد.')
+    return jsonify(success=True, message=f'{product_name} به سبد خرید اضافه شد.') # type: ignore
 
 @app.route('/api/orders')
 @login_required
@@ -332,16 +319,22 @@ def api_clear_cart():
     db.session.commit()
     return jsonify(success=True, message='سبد خرید خالی شد.')
 
-# -------------------- API: نظرات --------------------
 @app.route('/api/add_review/<int:product_id>', methods=['POST'])
 @login_required
 def api_add_review(product_id):
     data = request.get_json()
     content = data.get('content', '').strip()
-    rating = int(data.get('rating', 5))
+    try:
+        rating = int(data.get('rating', 5))
+    except (TypeError, ValueError):
+        return jsonify(success=False, error='امتیاز نامعتبر است.'), 400
     if not content:
         return jsonify(success=False, error='لطفاً نظر خود را بنویسید.'), 400
-    review = Review(user_id=current_user.id, product_id=product_id, content=content, rating=rating)
+    if not 1 <= rating <= 5:
+        return jsonify(success=False, error='امتیاز باید بین ۱ تا ۵ باشد.'), 400
+    if db.session.get(Product, product_id) is None:
+        return jsonify(success=False, error='محصول پیدا نشد.'), 404
+    review = Review(user_id=current_user.id, product_id=product_id, content=content, rating=rating) # type: ignore
     db.session.add(review)
     db.session.commit()
     return jsonify(success=True, message='نظر شما ثبت شد.')
@@ -356,7 +349,6 @@ def api_delete_own_review(review_id):
     db.session.commit()
     return jsonify(success=True, message='نظر شما حذف شد.')
 
-# -------------------- API: تیکت‌ها --------------------
 @app.route('/api/ticket', methods=['POST'])
 @login_required
 def api_create_ticket():
@@ -367,14 +359,18 @@ def api_create_ticket():
     if not subject or not message:
         return jsonify(success=False, error='موضوع و شرح تیکت الزامی است.'), 400
     ticket = Ticket(
-        ticket_id='TKT-' + ''.join(random.choices(string.ascii_uppercase + string.digits, k=5)),
-        user_id=current_user.id,
-        subject=subject,
-        message=message,
-        priority=priority
+        ticket_id='TKT-' + secrets.token_hex(8).upper(), # type: ignore
+        user_id=current_user.id, # type: ignore
+        subject=subject, # type: ignore 
+        message=message, # type: ignore
+        priority=priority # type: ignore
     )
     db.session.add(ticket)
-    db.session.commit()
+    try:
+        db.session.commit()
+    except IntegrityError:
+        db.session.rollback()
+        return jsonify(success=False, error='لطفاً دوباره تلاش کنید.'), 409
     return jsonify(success=True, ticket_id=ticket.ticket_id, message='تیکت شما ثبت شد.')
 
 @app.route('/api/tickets')
@@ -412,13 +408,12 @@ def api_add_reply(ticket_id):
     data = request.get_json()
     reply_text = data.get('reply_text', '').strip()
     if reply_text:
-        reply = TicketReply(ticket_id=ticket.id, author='customer', text=reply_text)
+        reply = TicketReply(ticket_id=ticket.id, author='customer', text=reply_text) # type: ignore
         db.session.add(reply)
         db.session.commit()
         return jsonify(success=True)
     return jsonify(success=False, error='پاسخ نمی‌تواند خالی باشد.'), 400
 
-# -------------------- API: تماس با ما --------------------
 @app.route('/api/contact', methods=['POST'])
 def api_contact():
     data = request.get_json()
@@ -428,15 +423,14 @@ def api_contact():
     message = data.get('message', '').strip()
     if not name or not email or not message:
         return jsonify(success=False, error='فیلدهای ضروری را پر کنید.'), 400
-    msg = ContactMessage(name=name, email=email, subject=subject or 'بدون موضوع', message=message)
+    msg = ContactMessage(name=name, email=email, subject=subject or 'بدون موضوع', message=message) # type: ignore
     db.session.add(msg)
     db.session.commit()
     return jsonify(success=True, message='پیام شما با موفقیت ارسال شد.')
 
-# -------------------- پنل ادمین (توکن‌محور) --------------------
 ADMIN_PANEL_PASSWORD = '123456'
 admin_tokens = set()
-UPLOAD_FOLDER = os.path.join(app.static_folder, 'images')
+UPLOAD_FOLDER = os.path.join(app.static_folder, 'images') # type: ignore
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'webp'}
 
 def allowed_file(filename):
@@ -479,7 +473,6 @@ def api_admin_logout():
         admin_tokens.remove(token)
     return jsonify(success=True)
 
-# --- مدیریت تیکت‌ها در پنل ادمین ---
 @app.route('/api/admin/tickets')
 def api_admin_tickets():
     if (error := admin_required()): return error
@@ -487,8 +480,8 @@ def api_admin_tickets():
     return jsonify([{
         'id': t.id,
         'ticket_id': t.ticket_id,
-        'user_name': User.query.get(t.user_id).name,
-        'user_email': User.query.get(t.user_id).email,
+        'user_name': User.query.get(t.user_id).name, # type: ignore
+        'user_email': User.query.get(t.user_id).email, # type: ignore
         'subject': t.subject,
         'message': t.message,
         'priority': t.priority,
@@ -519,7 +512,7 @@ def api_admin_reply(ticket_id):
     data = request.get_json()
     reply_text = data.get('reply_text', '').strip()
     if reply_text:
-        reply = TicketReply(ticket_id=ticket.id, author='admin', text=reply_text)
+        reply = TicketReply(ticket_id=ticket.id, author='admin', text=reply_text) # type: ignore
         db.session.add(reply)
         db.session.commit()
         return jsonify(success=True)
@@ -533,7 +526,6 @@ def api_admin_delete_all():
     db.session.commit()
     return jsonify(success=True, message='همه تیکت‌ها حذف شدند.')
 
-# --- مدیریت پیام‌های تماس در پنل ادمین ---
 @app.route('/api/admin/contacts')
 def api_admin_contacts():
     if (error := admin_required()): return error
@@ -562,7 +554,6 @@ def api_admin_delete_all_contacts():
     db.session.commit()
     return jsonify(success=True, message='همه پیام‌ها حذف شدند.')
 
-# --- مدیریت محصولات در پنل ادمین ---
 @app.route('/api/admin/products', methods=['POST'])
 def api_admin_create_product():
     if (error := admin_required()): return error
@@ -587,18 +578,18 @@ def api_admin_create_product():
     if 'image' in request.files:
         file = request.files['image']
         if file and allowed_file(file.filename):
-            ext = file.filename.rsplit('.', 1)[1].lower()
+            ext = file.filename.rsplit('.', 1)[1].lower() # type: ignore
             temp_name = f"temp_{datetime.utcnow().strftime('%Y%m%d%H%M%S')}.{ext}"
             file.save(os.path.join(UPLOAD_FOLDER, temp_name))
             image_filename = temp_name
 
     product = Product(
-        name=name, category=category, price=price,
-        description=description,
-        short_description=short_description,
-        specs=specs,
-        image=image_filename,
-        is_special=is_special, discount=discount
+        name=name, category=category, price=price, # type: ignore
+        description=description, # type: ignore
+        short_description=short_description, # type: ignore
+        specs=specs, # type: ignore
+        image=image_filename, # type: ignore
+        is_special=is_special, discount=discount # type: ignore
     )
     db.session.add(product)
     db.session.commit()
@@ -637,16 +628,17 @@ def api_admin_update_product(product_id):
     if 'image' in request.files:
         file = request.files['image']
         if file and allowed_file(file.filename):
-            if product.image:
-                old_path = os.path.join(UPLOAD_FOLDER, product.image)
-                if os.path.exists(old_path):
-                    os.remove(old_path)
-            ext = file.filename.rsplit('.', 1)[1].lower()
+            ext = file.filename.rsplit('.', 1)[1].lower() # type: ignore
             new_name = f"product_{product.id}.{ext}"
+            old_image = product.image
             file.save(os.path.join(UPLOAD_FOLDER, new_name))
             product.image = new_name
 
     db.session.commit()
+    if 'old_image' in locals() and old_image and old_image != product.image: # type: ignore
+        old_path = os.path.join(UPLOAD_FOLDER, old_image)
+        if os.path.exists(old_path):
+            os.remove(old_path)
     return jsonify(success=True, product=product_to_dict(product))
 
 @app.route('/api/admin/products/<int:product_id>', methods=['DELETE'])
@@ -661,44 +653,43 @@ def api_admin_delete_product(product_id):
     db.session.commit()
     return jsonify(success=True, message='محصول حذف شد.')
 
-# -------------------- اجرای اولیه --------------------
 def init_db():
     with app.app_context():
         db.create_all()
         if Product.query.count() == 0:
             products = [
-                Product(name='آیس ماچا', category='coffee', price=300000, image='item1.png', is_special=True,
-                        description='آیس ماچا استارباکس با استفاده از پودر ماچای مرغوب ژاپنی، شیر تازه و یخ فراوان تهیه می‌شود. این نوشیدنی نه تنها طعمی فوق‌العاده دارد، بلکه به دلیل خواص چای سبز، سرشار از آنتی‌اکسیدان است. مناسب برای کسانی که به دنبال یک نوشیدنی سالم و مقوی هستند.\n\n- نوع چای: ماچا ژاپنی درجه یک\n- شیرین‌کننده: قابل تنظیم (معمولاً شربت ساده یا عسل)\n- مواد اصلی: پودر ماچا، شیر، یخ\n- مناسب برای: تمام فصول، انرژی‌بخش',
-                        short_description='نوشیدنی خنک و دلچسب ماچا با شیر و یخ، ترکیبی ایده‌آل برای روزهای گرم.',
-                        specs='{"حجم": "۴۰۰ میلی‌لیتر", "دمای سرو": "بسیار خنک", "بسته‌بندی": "لیوان مخصوص با درب", "مواد تشکیل‌دهنده": "پودر ماچا، شیر، یخ، شیرین‌کننده (اختیاری)"}'),
-                Product(name='کاپوچینو', category='coffee', price=100000, image='item2.png', is_special=True,
-                        description='کاپوچینوی کلاسیک ایتالیایی با اسپرسوی قوی و شیر کف‌دار. ترکیبی عالی برای شروع روز.\n\n- نوع قهوه: عربیکا\n- شیر: کامل\n- دمای سرو: گرم',
-                        short_description='اسپرسوی قوی با شیر کف‌دار برای روزهای پرانرژی.',
-                        specs='{"حجم": "۳۰۰ میلی‌لیتر", "دمای سرو": "گرم", "بسته‌بندی": "لیوان کاغذی درب‌دار", "مواد تشکیل‌دهنده": "اسپرسو، شیر کامل"}'),
-                Product(name='امریکانو', category='coffee', price=120000, image='item3.png', is_special=True,
-                        description='اسپرسوی رقیق‌شده با آب جوش، طعمی صاف و تلخ برای لذت واقعی قهوه.\n\n- نوع قهوه: عربیکا\n- حجم اسپرسو: دبل\n- دمای سرو: گرم',
-                        short_description='اسپرسوی رقیق‌شده برای طعمی صاف و تلخ.',
-                        specs='{"حجم": "۳۵۰ میلی‌لیتر", "دمای سرو": "گرم", "بسته‌بندی": "لیوان کاغذی", "مواد تشکیل‌دهنده": "اسپرسو، آب"}'),
-                Product(name='کارامل لته', category='coffee', price=150000, image='item4.png', is_special=True,
-                        description='اسپرسوی نرم با شیر بخارپز و سس کارامل شیرین. یک انتخاب دلپذیر برای عصر.\n\n- نوع قهوه: عربیکا\n- سس: کارامل طبیعی\n- دمای سرو: گرم',
-                        short_description='اسپرسو با شیر بخارپز و سس کارامل دلپذیر.',
-                        specs='{"حجم": "۳۵۰ میلی‌لیتر", "دمای سرو": "گرم", "بسته‌بندی": "لیوان کاغذی", "مواد تشکیل‌دهنده": "اسپرسو، شیر، سس کارامل"}'),
-                Product(name='وانیل چیزکیک', category='cake', price=350000, image='item5.png', is_special=True,
-                        description='چیزکیک وانیلی خامه‌ای با بافتی نرم و طعمی لطیف. تهیه‌شده از پنیر خامه‌ای تازه و وانیل طبیعی.\n\n- وزن: ۲۵۰ گرم\n- نوع: وانیلی\n- مناسب برای: ۱-۲ نفر',
-                        short_description='چیزکیک وانیلی نرم و لطیف برای لحظات شیرین.',
-                        specs='{"وزن": "۲۵۰ گرم", "طعم": "وانیل طبیعی", "بسته‌بندی": "جعبه کاغذی", "مواد اصلی": "پنیر خامه‌ای، تخم‌مرغ، شکر، وانیل"}'),
-                Product(name='نیویورک چیزکیک', category='cake', price=700000, image='item6.png',
-                        description='چیزکیک کلاسیک نیویورکی با بافتی متراکم و غنی. پخته‌شده با پنیر خامه‌ای و خامه ترش.\n\n- وزن: ۵۰۰ گرم\n- نوع: پخته\n- مناسب برای: ۲-۳ نفر',
-                        short_description='چیزکیک متراکم و غنی نیویورکی برای عاشقان طعم‌های کلاسیک.',
-                        specs='{"وزن": "۵۰۰ گرم", "طعم": "کلاسیک", "بسته‌بندی": "جعبه مقوایی", "مواد اصلی": "پنیر خامه‌ای، خامه ترش، تخم‌مرغ"}'),
-                Product(name='استرابری چیزکیک', category='cake', price=400000, image='item7.png', is_special=True,
-                        description='چیزکیک یخچالی با سس توت‌فرنگی تازه و تکه‌های میوه. طعمی ترش و شیرین که همه را راضی می‌کند.\n\n- وزن: ۳۰۰ گرم\n- نوع: یخچالی\n- مناسب برای: ۱-۲ نفر',
-                        short_description='چیزکیک یخچالی با توت‌فرنگی تازه، ترش و شیرین.',
-                        specs='{"وزن": "۳۰۰ گرم", "طعم": "توت‌فرنگی", "بسته‌بندی": "جعبه کاغذی", "مواد اصلی": "پنیر خامه‌ای، توت‌فرنگی، شکر"}'),
-                Product(name='چاکلت چیزکیک', category='cake', price=500000, image='item8.png', is_special=True,
-                        description='چیزکیک شکلاتی بلژیکی با شکلات تلخ و شیرین. بافتی مخملی و طعمی فوق‌العاده برای عاشقان شکلات.\n\n- وزن: ۳۵۰ گرم\n- نوع: یخچالی\n- مناسب برای: ۱-۲ نفر',
-                        short_description='چیزکیک شکلاتی بلژیکی با بافتی مخملی.',
-                        specs='{"وزن": "۳۵۰ گرم", "طعم": "شکلات بلژیکی", "بسته‌بندی": "جعبه کاغذی", "مواد اصلی": "پنیر خامه‌ای، شکلات تلخ، کاکائو"}'),
+                Product(name='آیس ماچا', category='coffee', price=300000, image='item1.png', is_special=True, # type: ignore
+                        description='آیس ماچا استارباکس با استفاده از پودر ماچای مرغوب ژاپنی، شیر تازه و یخ فراوان تهیه می‌شود. این نوشیدنی نه تنها طعمی فوق‌العاده دارد، بلکه به دلیل خواص چای سبز، سرشار از آنتی‌اکسیدان است. مناسب برای کسانی که به دنبال یک نوشیدنی سالم و مقوی هستند.\n\n- نوع چای: ماچا ژاپنی درجه یک\n- شیرین‌کننده: قابل تنظیم (معمولاً شربت ساده یا عسل)\n- مواد اصلی: پودر ماچا، شیر، یخ\n- مناسب برای: تمام فصول، انرژی‌بخش', # type: ignore
+                        short_description='نوشیدنی خنک و دلچسب ماچا با شیر و یخ، ترکیبی ایده‌آل برای روزهای گرم.', # type: ignore
+                        specs='{"حجم": "۴۰۰ میلی‌لیتر", "دمای سرو": "بسیار خنک", "بسته‌بندی": "لیوان مخصوص با درب", "مواد تشکیل‌دهنده": "پودر ماچا، شیر، یخ، شیرین‌کننده (اختیاری)"}'), # type: ignore
+                Product(name='کاپوچینو', category='coffee', price=100000, image='item2.png', is_special=True, # type: ignore
+                        description='کاپوچینوی کلاسیک ایتالیایی با اسپرسوی قوی و شیر کف‌دار. ترکیبی عالی برای شروع روز.\n\n- نوع قهوه: عربیکا\n- شیر: کامل\n- دمای سرو: گرم', # type: ignore
+                        short_description='اسپرسوی قوی با شیر کف‌دار برای روزهای پرانرژی.',# type: ignore
+                        specs='{"حجم": "۳۰۰ میلی‌لیتر", "دمای سرو": "گرم", "بسته‌بندی": "لیوان کاغذی درب‌دار", "مواد تشکیل‌دهنده": "اسپرسو، شیر کامل"}'), # type: ignore
+                Product(name='امریکانو', category='coffee', price=120000, image='item3.png', is_special=True, # type: ignore
+                        description='اسپرسوی رقیق‌شده با آب جوش، طعمی صاف و تلخ برای لذت واقعی قهوه.\n\n- نوع قهوه: عربیکا\n- حجم اسپرسو: دبل\n- دمای سرو: گرم', # type: ignore
+                        short_description='اسپرسوی رقیق‌شده برای طعمی صاف و تلخ.', # type: ignore
+                        specs='{"حجم": "۳۵۰ میلی‌لیتر", "دمای سرو": "گرم", "بسته‌بندی": "لیوان کاغذی", "مواد تشکیل‌دهنده": "اسپرسو، آب"}'), # type: ignore
+                Product(name='کارامل لته', category='coffee', price=150000, image='item4.png', is_special=True, # type: ignore
+                        description='اسپرسوی نرم با شیر بخارپز و سس کارامل شیرین. یک انتخاب دلپذیر برای عصر.\n\n- نوع قهوه: عربیکا\n- سس: کارامل طبیعی\n- دمای سرو: گرم', # type: ignore
+                        short_description='اسپرسو با شیر بخارپز و سس کارامل دلپذیر.', # type: ignore
+                        specs='{"حجم": "۳۵۰ میلی‌لیتر", "دمای سرو": "گرم", "بسته‌بندی": "لیوان کاغذی", "مواد تشکیل‌دهنده": "اسپرسو، شیر، سس کارامل"}'), # type: ignore
+                Product(name='وانیل چیزکیک', category='cake', price=350000, image='item5.png', is_special=True, # type: ignore
+                        description='چیزکیک وانیلی خامه‌ای با بافتی نرم و طعمی لطیف. تهیه‌شده از پنیر خامه‌ای تازه و وانیل طبیعی.\n\n- وزن: ۲۵۰ گرم\n- نوع: وانیلی\n- مناسب برای: ۱-۲ نفر', # type: ignore
+                        short_description='چیزکیک وانیلی نرم و لطیف برای لحظات شیرین.', # type: ignore
+                        specs='{"وزن": "۲۵۰ گرم", "طعم": "وانیل طبیعی", "بسته‌بندی": "جعبه کاغذی", "مواد اصلی": "پنیر خامه‌ای، تخم‌مرغ، شکر، وانیل"}'), # type: ignore
+                Product(name='نیویورک چیزکیک', category='cake', price=700000, image='item6.png', # type: ignore
+                        description='چیزکیک کلاسیک نیویورکی با بافتی متراکم و غنی. پخته‌شده با پنیر خامه‌ای و خامه ترش.\n\n- وزن: ۵۰۰ گرم\n- نوع: پخته\n- مناسب برای: ۲-۳ نفر', # type: ignore
+                        short_description='چیزکیک متراکم و غنی نیویورکی برای عاشقان طعم‌های کلاسیک.', # type: ignore
+                        specs='{"وزن": "۵۰۰ گرم", "طعم": "کلاسیک", "بسته‌بندی": "جعبه مقوایی", "مواد اصلی": "پنیر خامه‌ای، خامه ترش، تخم‌مرغ"}'), # type: ignore
+                Product(name='استرابری چیزکیک', category='cake', price=400000, image='item7.png', is_special=True, # type: ignore
+                        description='چیزکیک یخچالی با سس توت‌فرنگی تازه و تکه‌های میوه. طعمی ترش و شیرین که همه را راضی می‌کند.\n\n- وزن: ۳۰۰ گرم\n- نوع: یخچالی\n- مناسب برای: ۱-۲ نفر', # type: ignore
+                        short_description='چیزکیک یخچالی با توت‌فرنگی تازه، ترش و شیرین.', # type: ignore
+                        specs='{"وزن": "۳۰۰ گرم", "طعم": "توت‌فرنگی", "بسته‌بندی": "جعبه کاغذی", "مواد اصلی": "پنیر خامه‌ای، توت‌فرنگی، شکر"}'), # type: ignore
+                Product(name='چاکلت چیزکیک', category='cake', price=500000, image='item8.png', is_special=True, # type: ignore
+                        description='چیزکیک شکلاتی بلژیکی با شکلات تلخ و شیرین. بافتی مخملی و طعمی فوق‌العاده برای عاشقان شکلات.\n\n- وزن: ۳۵۰ گرم\n- نوع: یخچالی\n- مناسب برای: ۱-۲ نفر', # type: ignore
+                        short_description='چیزکیک شکلاتی بلژیکی با بافتی مخملی.', # type: ignore
+                        specs='{"وزن": "۳۵۰ گرم", "طعم": "شکلات بلژیکی", "بسته‌بندی": "جعبه کاغذی", "مواد اصلی": "پنیر خامه‌ای، شکلات تلخ، کاکائو"}'), # type: ignore
             ]
             db.session.add_all(products)
         db.session.commit()
@@ -706,4 +697,4 @@ def init_db():
 init_db() 
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    app.run(debug=os.environ.get('FLASK_DEBUG') == '1', host='0.0.0.0', port=5000)

@@ -1,4 +1,4 @@
-// ======================== API Helper ========================
+
 const API_BASE = '';
 
 async function apiFetch(url, options = {}) {
@@ -13,13 +13,11 @@ async function apiFetch(url, options = {}) {
     return res.json();
 }
 
-// ======================== Escape HTML ========================
 function escapeHtml(text) {
     const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
     return String(text).replace(/[&<>"']/g, m => map[m]);
 }
 
-// ======================== مودال‌های عمومی ========================
 function showConfirmModal(message) {
     return new Promise((resolve) => {
         const msgEl = document.getElementById('confirmModalMessage');
@@ -83,7 +81,6 @@ function showPasswordPrompt(message) {
     });
 }
 
-// ======================== بخش‌های ظاهری ========================
 const header = document.getElementById("header");
 if (header) {
     window.addEventListener("scroll", () => header.classList.toggle("scrolled", window.scrollY > 50));
@@ -133,7 +130,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-// ======================== احراز هویت (کاربران عادی) ========================
 document.addEventListener('DOMContentLoaded', () => {
     async function updateLoginStatus() {
         const link = document.getElementById('loginStatusLink');
@@ -199,20 +195,18 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-// ======================== محصولات (صفحه اصلی) ========================
 async function loadHomeProducts() {
     const superSellContainer = document.getElementById('superSellContainer');
     if (!superSellContainer) return;
     const data = await apiFetch('/api/products');
-    const specialIds = [5, 7, 2, 3, 4, 8];   // همون ترتیب همیشگی
+    const specialIds = [5, 7, 2, 3, 4, 8];
     const specials = specialIds.map(id => data.find(p => p.id === id)).filter(Boolean);
 
     superSellContainer.innerHTML = specials.map((p, index) => {
-        // کلاس‌های ویژه برای اولین و آخرین آیتم
         let extraClass = '';
-        if (index === 0) extraClass = 'super-sell-item-1';        // محصول اول
-        else if (index === specials.length - 1) extraClass = 'super-sell-item-2'; // محصول آخر
-        else extraClass = 'super-sell-item';                      // بقیه
+        if (index === 0) extraClass = 'super-sell-item-1';
+        else if (index === specials.length - 1) extraClass = 'super-sell-item-2';
+        else extraClass = 'super-sell-item';
 
         return `
             <a href="/product/${p.id}" class="${extraClass}">
@@ -225,7 +219,6 @@ async function loadHomeProducts() {
 }
 if (window.location.pathname.includes('/home')) loadHomeProducts();
 
-// جستجوی زنده
 const searchInput = document.getElementById('searchInput');
 const searchResultsContainer = document.getElementById('searchResults');
 if (searchInput && searchResultsContainer) {
@@ -250,7 +243,6 @@ if (searchInput && searchResultsContainer) {
     });
 }
 
-// ======================== صفحات محصول (product.html) ========================
 if (window.location.pathname.includes('/product/')) {
     document.addEventListener('DOMContentLoaded', async function() {
         const match = window.location.pathname.match(/product\/(\d+)/);
@@ -263,9 +255,6 @@ if (window.location.pathname.includes('/product/')) {
         try {
             const product = await fetch('/api/product/' + productId).then(r => r.json());
 
-            // لاگ برای بررسی
-            console.log('محصول دریافت شد:', product);
-
             document.getElementById('productName').textContent = product.name;
             document.getElementById('productDetailName').textContent = product.name;
             document.getElementById('productImage').src = '/images/' + product.image;
@@ -276,7 +265,6 @@ if (window.location.pathname.includes('/product/')) {
             const fullDesc = document.getElementById('fullDescription');
             if (fullDesc) fullDesc.textContent = product.description || '';
 
-            // قیمت و تخفیف
             function toPersianPrice(num) {
                 const formatted = num.toLocaleString('en-US');
                 return formatted.replace(/\d/g, d => '۰۱۲۳۴۵۶۷۸۹'[d]);
@@ -308,7 +296,6 @@ if (window.location.pathname.includes('/product/')) {
                 buyBtn.setAttribute('data-product-price', toPersianPrice(finalPrice) + ' تومان');
             }
 
-            // ===== مشخصات فنی (بخش بحرانی) =====
             const specsTable = document.getElementById('specsTable');
             if (specsTable) {
                 if (product.specs && product.specs.trim() !== '') {
@@ -327,7 +314,6 @@ if (window.location.pathname.includes('/product/')) {
                 }
             }
 
-            // نظرات (همان نسخهٔ قبلی)
             function renderReviews(reviews) {
                 const list = document.getElementById('reviewsList');
                 if (!list) return;
@@ -356,7 +342,6 @@ if (window.location.pathname.includes('/product/')) {
 
             if (product.reviews) renderReviews(product.reviews);
 
-            // ثبت نظر
             const reviewForm = document.getElementById('addReviewForm');
             if (reviewForm) {
                 const newReviewForm = reviewForm.cloneNode(true);
@@ -381,7 +366,6 @@ if (window.location.pathname.includes('/product/')) {
                 }
             }
 
-            // دکمه خرید
             document.addEventListener('click', async function(e) {
                 const buyBtn = e.target.closest('#buyButton');
                 if (!buyBtn) return;
@@ -409,7 +393,6 @@ if (window.location.pathname.includes('/product/')) {
     });
 }
 
-// ======================== حساب کاربری ========================
 if (window.location.pathname.includes('/account')) {
     document.addEventListener('DOMContentLoaded', async function() {
         async function loadUserInfo() {
@@ -495,7 +478,6 @@ if (window.location.pathname.includes('/account')) {
     });
 }
 
-// ======================== تیکت‌ها ========================
 if (document.getElementById('ticketForm')) {
     document.getElementById('ticketForm').addEventListener('submit', async function(e) {
         e.preventDefault();
@@ -515,59 +497,396 @@ if (document.getElementById('ticketForm')) {
     });
 }
 
-// ======================== پرتال مشتری ========================
-if (document.getElementById('searchBtn')) {
-    const container = document.getElementById('ticketsContainer');
-    const searchBtn = document.getElementById('searchBtn');
-    const searchQuery = document.getElementById('searchQuery');
-    let pollInterval = null, currentQuery = '';
+if (window.location.pathname.includes('/customer')) {
+    (function() {
+        const container = document.getElementById('ticketsContainer');
+        const userDisplay = document.getElementById('userDisplay');
+        const newTicketBtn = document.getElementById('newTicketBtn');
+        const ticketFormCard = document.getElementById('ticketFormCard');
+        const cancelTicketBtn = document.getElementById('cancelTicketBtn');
+        const newTicketForm = document.getElementById('newTicketForm');
+        const ticketFormMessage = document.getElementById('ticketFormMessage');
+        const openCount = document.getElementById('openCount');
+        const progressCount = document.getElementById('progressCount');
+        const closedCount = document.getElementById('closedCount');
 
-    function showDefaultMessage() { container.innerHTML = '<div class="no-ticket">لطفاً ایمیل یا شناسه تیکت خود را وارد کرده و جستجو کنید.</div>'; stopPolling(); }
-    function stopPolling() { if (pollInterval) { clearInterval(pollInterval); pollInterval = null; } }
-    function startPolling(query) { stopPolling(); if (query) pollInterval = setInterval(() => searchTickets(query), 5000); }
+        let pollInterval = null;
 
-    async function searchTickets(query) {
-        if (!container) return;
-        if (!query) { showDefaultMessage(); return; }
-        currentQuery = query;
-        try {
-            const tickets = await apiFetch('/api/tickets?search=' + encodeURIComponent(query));
-            if (!tickets.length) { container.innerHTML = '<div class="no-ticket">هیچ تیکتی با این مشخصات یافت نشد.</div>'; return; }
-            container.innerHTML = '';
-            tickets.forEach(ticket => {
-                const statusText = ticket.status === 'open' ? 'باز' : ticket.status === 'in-progress' ? 'در حال بررسی' : 'بسته';
-                const div = document.createElement('div');
-                div.className = `ticket-card ${ticket.status === 'closed' ? 'closed' : ''}`;
-                div.innerHTML = `
-                    <div class="ticket-header"><span class="ticket-id">${ticket.ticket_id}</span><span class="ticket-date">${ticket.date}</span></div>
-                    <div class="ticket-subject">${escapeHtml(ticket.subject)}</div>
-                    <div class="ticket-detail"><p><strong>وضعیت:</strong> <span class="status-badge status-${ticket.status}">${statusText}</span></p><p><strong>اولویت:</strong> ${escapeHtml(ticket.priority)}</p><p><strong>شرح:</strong> ${escapeHtml(ticket.message)}</p></div>
-                    <div class="replies-section"><strong>پاسخ‌ها:</strong>${ticket.replies.length === 0 ? '<p>هنوز پاسخی ثبت نشده.</p>' : ticket.replies.map(r => `<div class="reply-bubble ${r.author==='admin'?'admin':''}"><div class="reply-author">${r.author==='admin'?'پشتیبانی':'شما'}</div><div>${escapeHtml(r.text)}</div><div class="reply-date">${r.date}</div></div>`).join('')}</div>
-                    ${ticket.status !== 'closed' ? `<div class="reply-form"><textarea id="reply-${ticket.ticket_id}" class="reply-textarea" placeholder="پاسخ شما..."></textarea><button class="send-reply-btn" data-ticket-id="${ticket.ticket_id}">ارسال</button></div>` : ''}
-                `;
-                container.appendChild(div);
-            });
-            document.querySelectorAll('.reply-textarea').forEach(ta => { ta.addEventListener('focus', stopPolling); ta.addEventListener('blur', () => { if (currentQuery) startPolling(currentQuery); }); });
-            document.querySelectorAll('.send-reply-btn').forEach(btn => {
-                btn.addEventListener('click', async function() {
-                    const tid = this.dataset.ticketId;
-                    const ta = document.getElementById(`reply-${tid}`);
-                    if (!ta) return;
-                    const text = ta.value.trim();
-                    if (!text) return alert('پاسخ نمی‌تواند خالی باشد.');
-                    const res = await apiFetch(`/api/ticket/reply/${tid}`, { method: 'POST', body: JSON.stringify({ reply_text: text }) });
-                    if (res.success) searchTickets(currentQuery); else alert(res.error || 'خطا');
+        function stopPolling() {
+            if (pollInterval) { clearInterval(pollInterval); pollInterval = null; }
+        }
+
+        function startPolling() {
+            stopPolling();
+            pollInterval = setInterval(loadTickets, 5000);
+        }
+
+        function showMessage(el, text, type) {
+            el.textContent = text;
+            el.className = 'form-message-customer ' + type;
+            el.style.display = 'block';
+            setTimeout(() => { el.style.display = 'none'; }, 5000);
+        }
+
+        function updateStats(tickets) {
+            const open = tickets.filter(t => t.status === 'open').length;
+            const progress = tickets.filter(t => t.status === 'in-progress').length;
+            const closed = tickets.filter(t => t.status === 'closed').length;
+            
+            if (openCount) openCount.textContent = open;
+            if (progressCount) progressCount.textContent = progress;
+            if (closedCount) closedCount.textContent = closed;
+        }
+
+        function getPriorityLabel(priority) {
+            const labels = {
+                'low': 'کم',
+                'normal': 'معمولی',
+                'high': 'بالا'
+            };
+            return labels[priority] || priority;
+        }
+
+        function getPriorityClass(priority) {
+            const classes = {
+                'low': 'priority-low',
+                'normal': 'priority-normal',
+                'high': 'priority-high'
+            };
+            return classes[priority] || '';
+        }
+
+        function getPriorityIcon(priority) {
+            const icons = {
+                'low': '<svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>',
+                'normal': '<svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>',
+                'high': '<svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>'
+            };
+            return icons[priority] || '';
+        }
+
+        async function checkUser() {
+            try {
+                const response = await fetch('/api/user', { credentials: 'include' });
+                if (response.status === 401) {
+                    window.location.href = '/login';
+                    return null;
+                }
+                const user = await response.json();
+                if (user && user.id) {
+                    userDisplay.innerHTML = `
+                        <span class="online-dot"></span>
+                        ${user.name} (${user.email})
+                    `;
+                    return user;
+                } else {
+                    window.location.href = '/login';
+                    return null;
+                }
+            } catch (e) {
+                window.location.href = '/login';
+                return null;
+            }
+        }
+
+        function getStatusText(status) {
+            const texts = {
+                'open': 'باز',
+                'in-progress': 'در حال بررسی',
+                'closed': 'بسته'
+            };
+            return texts[status] || status;
+        }
+
+        function getStatusIcon(status) {
+            const icons = {
+                'open': '<svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>',
+                'in-progress': '<svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>',
+                'closed': '<svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>'
+            };
+            return icons[status] || '';
+        }
+
+        async function loadTickets() {
+            if (!container) return;
+            try {
+                const response = await fetch('/api/tickets', { credentials: 'include' });
+                if (response.status === 401) {
+                    window.location.href = '/login';
+                    return;
+                }
+                const tickets = await response.json();
+                updateStats(tickets);
+
+                if (!tickets || !tickets.length) {
+                    container.innerHTML = `
+                        <div class="no-ticket">
+                            <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H5.17L4 17.17V4h16v12zM6 12h12v2H6zm0-3h12v2H6zm0-3h12v2H6z"/></svg>
+                            <h3>هنوز تیکتی ثبت نکرده‌اید</h3>
+                            <p>برای دریافت پشتیبانی، دکمه "تیکت جدید" را بزنید.</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                container.innerHTML = tickets.map(ticket => {
+                    const statusText = getStatusText(ticket.status);
+                    const statusIcon = getStatusIcon(ticket.status);
+                    const replyCount = ticket.replies ? ticket.replies.length : 0;
+                    const priorityClass = getPriorityClass(ticket.priority);
+                    const priorityLabel = getPriorityLabel(ticket.priority);
+                    const priorityIcon = getPriorityIcon(ticket.priority);
+                    
+                    return `
+                        <div class="ticket-card ${ticket.status === 'closed' ? 'closed' : ''}">
+                            <div class="ticket-header">
+                                <div class="ticket-header-left">
+                                    <span class="ticket-id">${escapeHtml(ticket.ticket_id)}</span>
+                                    <span class="status-badge status-${ticket.status}">${statusIcon} ${statusText}</span>
+                                    <span class="priority-badge ${priorityClass}">${priorityIcon} ${priorityLabel}</span>
+                                </div>
+                                <span class="ticket-date">
+                                    <svg viewBox="0 0 24 24"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11z"/></svg>
+                                    ${escapeHtml(ticket.date)}
+                                </span>
+                            </div>
+                            <div class="ticket-subject">${escapeHtml(ticket.subject)}</div>
+                            <div class="ticket-detail">
+                                <div class="detail-row">
+                                    <span>
+                                        <span class="detail-label">اولویت:</span>
+                                        <span class="detail-value">${priorityLabel}</span>
+                                    </span>
+                                    <span>
+                                        <span class="detail-label">وضعیت:</span>
+                                        <span class="detail-value">${statusText}</span>
+                                    </span>
+                                </div>
+                                <div class="message-box">${escapeHtml(ticket.message)}</div>
+                            </div>
+                            <div class="replies-section">
+                                <div class="replies-header">
+                                    <strong>
+                                        <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>
+                                        پاسخ‌ها
+                                    </strong>
+                                    <span class="reply-count">${replyCount} پاسخ</span>
+                                </div>
+                                ${replyCount === 0 ? 
+                                    '<div class="no-reply-message">هنوز پاسخی ثبت نشده است.</div>' :
+                                    ticket.replies.map(r => `
+                                        <div class="reply-bubble ${r.author === 'admin' ? 'admin' : ''}">
+                                            <div class="reply-author">
+                                                ${r.author === 'admin' ? 
+                                                    '<svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg> پشتیبانی' : 
+                                                    '<svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg> شما'
+                                                }
+                                                <span class="author-badge">${r.author === 'admin' ? 'ادمین' : 'کاربر'}</span>
+                                            </div>
+                                            <div class="reply-text">${escapeHtml(r.text)}</div>
+                                            <div class="reply-date">
+                                                <svg viewBox="0 0 24 24"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11z"/></svg>
+                                                ${escapeHtml(r.date)}
+                                            </div>
+                                        </div>
+                                    `).join('')
+                                }
+                            </div>
+                            ${ticket.status !== 'closed' ? `
+                                <div class="reply-form">
+                                    <textarea id="reply-${ticket.ticket_id}" class="reply-textarea" placeholder="پاسخ شما... (Shift+Enter برای خط جدید، Enter برای ارسال)"></textarea>
+                                    <button class="send-reply-btn" data-ticket-id="${ticket.ticket_id}">
+                                        <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+                                        ارسال
+                                    </button>
+                                </div>
+                            ` : `
+                                <div class="ticket-closed-badge">
+                                    <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+                                    این تیکت بسته شده است.
+                                </div>
+                            `}
+                        </div>
+                    `;
+                }).join('');
+
+                document.querySelectorAll('.reply-textarea').forEach(ta => {
+                    ta.addEventListener('focus', stopPolling);
+                    ta.addEventListener('blur', () => startPolling());
+                    
+                    ta.addEventListener('keydown', function(e) {
+                        if (e.key === 'Enter' && !e.shiftKey) {
+                            e.preventDefault();
+                            const btn = this.closest('.reply-form').querySelector('.send-reply-btn');
+                            if (btn) btn.click();
+                        }
+                    });
                 });
+
+                document.querySelectorAll('.send-reply-btn').forEach(btn => {
+                    btn.addEventListener('click', async function() {
+                        const tid = this.dataset.ticketId;
+                        const ta = document.getElementById(`reply-${tid}`);
+                        if (!ta) return;
+                        const text = ta.value.trim();
+                        if (!text) return showAlertModal('پاسخ نمی‌تواند خالی باشد.');
+                        
+                        this.disabled = true;
+                        this.innerHTML = `
+                            <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+                            در حال ارسال...
+                        `;
+                        
+                        try {
+                            const response = await fetch(`/api/ticket/reply/${tid}`, {
+                                method: 'POST',
+                                credentials: 'include',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ reply_text: text })
+                            });
+                            
+                            if (response.status === 401) {
+                                window.location.href = '/login';
+                                return;
+                            }
+                            
+                            const res = await response.json();
+                            if (res.success) {
+                                ta.value = '';
+                                await loadTickets();
+                                startPolling();
+                            } else {
+                                showAlertModal(res.error || 'خطا');
+                            }
+                        } catch (err) {
+                            showAlertModal('خطا در ارتباط با سرور');
+                        } finally {
+                            this.disabled = false;
+                            this.innerHTML = `
+                                <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+                                ارسال
+                            `;
+                        }
+                    });
+                });
+
+            } catch (e) {
+                console.error('Error loading tickets:', e);
+                container.innerHTML = `
+                    <div class="no-ticket">
+                        <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+                        <h3>خطا در بارگذاری</h3>
+                        <p>لطفاً دوباره تلاش کنید.</p>
+                        <button onclick="location.reload()" style="margin-top:15px; padding:10px 25px; background:#1E3A34; color:white; border:none; border-radius:10px; cursor:pointer; font-family:inherit; font-weight:600;">
+                            <svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:currentColor;vertical-align:middle;"><path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"/></svg>
+                            تلاش مجدد
+                        </button>
+                    </div>
+                `;
+            }
+        }
+
+        if (newTicketBtn) {
+            newTicketBtn.addEventListener('click', () => {
+                ticketFormCard.classList.toggle('open');
+                if (ticketFormCard.classList.contains('open')) {
+                    newTicketBtn.innerHTML = `
+                        <svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+                        بستن فرم
+                    `;
+                } else {
+                    newTicketBtn.innerHTML = `
+                        <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+                        تیکت جدید
+                    `;
+                    newTicketForm.reset();
+                    ticketFormMessage.style.display = 'none';
+                }
             });
-            startPolling(query);
-        } catch (e) {}
-    }
-    searchBtn.addEventListener('click', () => searchTickets(searchQuery.value.trim()));
-    searchQuery.addEventListener('keypress', e => { if (e.key === 'Enter') searchTickets(e.target.value.trim()); });
-    showDefaultMessage();
+        }
+
+        if (cancelTicketBtn) {
+            cancelTicketBtn.addEventListener('click', () => {
+                ticketFormCard.classList.remove('open');
+                newTicketBtn.innerHTML = `
+                    <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+                    تیکت جدید
+                `;
+                newTicketForm.reset();
+                ticketFormMessage.style.display = 'none';
+            });
+        }
+
+        if (newTicketForm) {
+            newTicketForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                const subject = document.getElementById('ticketSubject').value.trim();
+                const message = document.getElementById('ticketMessage').value.trim();
+                const priority = document.getElementById('ticketPriority').value;
+
+                if (!subject || !message) {
+                    showMessage(ticketFormMessage, 'لطفاً موضوع و شرح را وارد کنید.', 'error');
+                    return;
+                }
+
+                const submitBtn = this.querySelector('button[type="submit"]');
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = `
+                    <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+                    در حال ارسال...
+                `;
+
+                try {
+                    const response = await fetch('/api/ticket', {
+                        method: 'POST',
+                        credentials: 'include',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ subject, message, priority })
+                    });
+                    
+                    if (response.status === 401) {
+                        window.location.href = '/login';
+                        return;
+                    }
+                    
+                    const res = await response.json();
+                    if (res.success) {
+                        showMessage(ticketFormMessage, `✅ تیکت ${res.ticket_id} با موفقیت ثبت شد.`, 'success');
+                        newTicketForm.reset();
+                        ticketFormCard.classList.remove('open');
+                        newTicketBtn.innerHTML = `
+                            <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+                            تیکت جدید
+                        `;
+                        await loadTickets();
+                        startPolling();
+                    } else {
+                        showMessage(ticketFormMessage, res.error || 'خطا در ثبت تیکت', 'error');
+                    }
+                } catch (err) {
+                    showMessage(ticketFormMessage, 'خطا در ارتباط با سرور', 'error');
+                } finally {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = `
+                        <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+                        ارسال تیکت
+                    `;
+                }
+            });
+        }
+
+        checkUser().then(user => {
+            if (user) {
+                loadTickets();
+                startPolling();
+            }
+        });
+
+        window.addEventListener('beforeunload', stopPolling);
+
+    })();
 }
 
-// ======================== پنل ادمین ========================
 function specsTextToJson(text) {
     const lines = text.split('\n').filter(line => line.trim() !== '');
     const obj = {};
@@ -585,7 +904,6 @@ function specsTextToJson(text) {
 (async function() {
     if (!window.location.pathname.includes('/admin')) return;
 
-    // ---------- احراز هویت ----------
     let adminToken = sessionStorage.getItem('adminToken');
 
     if (!adminToken) {
@@ -607,12 +925,12 @@ function specsTextToJson(text) {
         sessionStorage.setItem('adminToken', adminToken);
     }
 
-    // wrapper برای همهٔ درخواست‌های ادمین
     async function adminApiFetch(url, options = {}) {
         const headers = { ...options.headers, 'X-Admin-Token': adminToken };
-        const res = await fetch(API_BASE + url, {
+        const res = await fetch(url, {
             headers: { 'Content-Type': 'application/json', ...headers },
-            ...options
+            ...options,
+            credentials: 'include'
         });
         if (res.status === 403) {
             sessionStorage.removeItem('adminToken');
@@ -623,7 +941,6 @@ function specsTextToJson(text) {
         return res.json();
     }
 
-    // ---------- المان‌های DOM ----------
     const ticketsContainer = document.getElementById('ticketsContainer');
     const messagesContainer = document.getElementById('messagesContainer');
     const productsContainer = document.getElementById('productsContainer');
@@ -635,13 +952,20 @@ function specsTextToJson(text) {
     const productForm = document.getElementById('productForm');
     const cancelProductBtn = document.getElementById('cancelProductBtn');
     const productModalTitle = document.getElementById('productModalTitle');
+    const ticketCount = document.getElementById('ticketCount');
+    const messageCount = document.getElementById('messageCount');
+    const productCount = document.getElementById('productCount');
 
     let pollInterval = null;
     let editingProductId = null;
 
-    // ---------- ابزارهای Polling ----------
-    function stopPolling() { if (pollInterval) { clearInterval(pollInterval); pollInterval = null; } }
-    function isAnyTextareaFocused() { return document.activeElement && document.activeElement.classList.contains('admin-reply-textarea'); }
+    function stopPolling() {
+        if (pollInterval) { clearInterval(pollInterval); pollInterval = null; }
+    }
+
+    function isAnyTextareaFocused() {
+        return document.activeElement && document.activeElement.classList.contains('admin-reply-textarea');
+    }
 
     function startPollingForActiveTab() {
         stopPolling();
@@ -650,7 +974,9 @@ function specsTextToJson(text) {
         const tab = activeTab.dataset.tab;
         if (tab === 'tickets') {
             renderTickets();
-            if (!isAnyTextareaFocused()) pollInterval = setInterval(renderTickets, 5000);
+            if (!isAnyTextareaFocused()) {
+                pollInterval = setInterval(renderTickets, 5000);
+            }
         } else if (tab === 'messages') {
             loadContacts();
             pollInterval = setInterval(loadContacts, 5000);
@@ -659,7 +985,6 @@ function specsTextToJson(text) {
         }
     }
 
-    // ---------- مدیریت تب‌ها ----------
     document.querySelectorAll('.admin-tabs .tab-btn').forEach(btn => {
         btn.addEventListener('click', () => {
             document.querySelectorAll('.admin-tabs .tab-btn').forEach(b => b.classList.remove('active'));
@@ -671,22 +996,43 @@ function specsTextToJson(text) {
         });
     });
 
-    // ==================== تیکت‌ها ====================
+    function getPriorityLabel(priority) {
+        const labels = { 'low': 'کم', 'normal': 'معمولی', 'high': 'بالا' };
+        return labels[priority] || priority;
+    }
+
+    function getPriorityClass(priority) {
+        const classes = { 'low': 'priority-low', 'normal': 'priority-normal', 'high': 'priority-high' };
+        return classes[priority] || '';
+    }
+
     async function renderTickets() {
         if (!ticketsContainer) return;
         try {
             const tickets = await adminApiFetch('/api/admin/tickets');
+            if (ticketCount) ticketCount.textContent = tickets.length;
+
             if (!tickets.length) {
-                ticketsContainer.innerHTML = '<div class="empty-state">هیچ تیکتی ثبت نشده است.</div>';
+                ticketsContainer.innerHTML = `
+                    <div class="empty-state">
+                        <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H5.17L4 17.17V4h16v12zM6 12h12v2H6zm0-3h12v2H6zm0-3h12v2H6z"/></svg>
+                        <h3>هیچ تیکتی ثبت نشده است</h3>
+                        <p>همه تیکت‌های کاربران در اینجا نمایش داده می‌شوند.</p>
+                    </div>
+                `;
                 return;
             }
+
             ticketsContainer.innerHTML = tickets.map(t => `
                 <div class="ticket-admin-card">
-                    <div class="admin-ticket-header">
+                    <div class="ticket-header">
                         <div class="ticket-meta">
                             <span class="ticket-id-badge">${t.ticket_id}</span>
-                            <span class="priority-badge">${t.priority}</span>
-                            <span>${t.date}</span>
+                            <span class="priority-badge ${getPriorityClass(t.priority)}">${getPriorityLabel(t.priority)}</span>
+                            <span class="ticket-date">
+                                <svg viewBox="0 0 24 24"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11z"/></svg>
+                                ${t.date}
+                            </span>
                         </div>
                         <select class="status-select" data-id="${t.id}">
                             <option value="open" ${t.status==='open'?'selected':''}>باز</option>
@@ -694,25 +1040,49 @@ function specsTextToJson(text) {
                             <option value="closed" ${t.status==='closed'?'selected':''}>بسته</option>
                         </select>
                     </div>
-                    <div class="customer-info"><strong>${escapeHtml(t.user_name)}</strong> (${escapeHtml(t.user_email)})</div>
-                    <h3>${escapeHtml(t.subject)}</h3>
+                    <div class="customer-info">
+                        <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                        <strong>${escapeHtml(t.user_name)}</strong>
+                        <span style="color:#95a5a6;">•</span>
+                        ${escapeHtml(t.user_email)}
+                    </div>
+                    <div class="ticket-subject">${escapeHtml(t.subject)}</div>
                     <div class="message-content">${escapeHtml(t.message)}</div>
                     <div class="replies-box">
-                        <strong>پاسخ‌ها:</strong>
-                        ${t.replies.length===0 ? '<p>بدون پاسخ</p>' : t.replies.map(r => `
-                            <div class="reply-item ${r.author==='admin'?'admin-reply':''}">
-                                <em>${r.author==='admin'?'ادمین':'مشتری'}:</em> ${escapeHtml(r.text)}
-                                <div class="reply-date">${r.date}</div>
-                            </div>`).join('')}
+                        <div class="replies-header">
+                            <strong>
+                                <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>
+                                پاسخ‌ها
+                            </strong>
+                            <span style="font-size:13px; color:#95a5a6;">${t.replies.length} پاسخ</span>
+                        </div>
+                        ${t.replies.length===0 ? '<p style="color:#b0a8a0; font-size:14px;">هنوز پاسخی ثبت نشده.</p>' : 
+                            t.replies.map(r => `
+                                <div class="reply-item ${r.author==='admin'?'admin-reply':''}">
+                                    <div class="reply-author">
+                                        <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                                        ${r.author==='admin' ? 'ادمین' : 'کاربر'}
+                                        <span class="role-badge ${r.author}">${r.author==='admin' ? 'ادمین' : 'کاربر'}</span>
+                                    </div>
+                                    <div class="reply-text">${escapeHtml(r.text)}</div>
+                                    <div class="reply-date">
+                                        <svg viewBox="0 0 24 24"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11z"/></svg>
+                                        ${r.date}
+                                    </div>
+                                </div>
+                            `).join('')
+                        }
                     </div>
                     <div class="admin-reply-form">
-                        <textarea id="admin-reply-${t.id}" class="admin-reply-textarea" placeholder="پاسخ ادمین..."></textarea>
-                        <button class="admin-reply-btn" data-id="${t.id}">ارسال</button>
+                        <textarea id="admin-reply-${t.id}" class="admin-reply-textarea" placeholder="پاسخ ادمین را بنویسید... (Enter برای ارسال)"></textarea>
+                        <button class="admin-reply-btn" data-id="${t.id}">
+                            <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+                            ارسال
+                        </button>
                     </div>
                 </div>
             `).join('');
 
-            // تغییر وضعیت
             document.querySelectorAll('.status-select').forEach(select => {
                 select.addEventListener('change', async function() {
                     await adminApiFetch(`/api/admin/update_status/${this.dataset.id}`, {
@@ -723,22 +1093,26 @@ function specsTextToJson(text) {
                 });
             });
 
-            // دکمه‌های پاسخ
             document.querySelectorAll('.admin-reply-btn').forEach(btn => {
                 btn.addEventListener('click', async function() {
                     const ta = document.getElementById(`admin-reply-${this.dataset.id}`);
                     if (!ta) return;
                     const text = ta.value.trim();
                     if (!text) return showAlertModal('پاسخ نمی‌تواند خالی باشد.');
+
+                    this.disabled = true;
+                    this.innerHTML = '<svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm1-13h-2v6l5.25 3.15L17 12.23l-4-2.37V7z"/></svg> در حال ارسال...';
+
                     await adminApiFetch(`/api/admin/reply/${this.dataset.id}`, {
                         method: 'POST',
                         body: JSON.stringify({ reply_text: text })
                     });
+                    this.disabled = false;
+                    this.innerHTML = '<svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg> ارسال';
                     renderTickets();
                 });
             });
 
-            // فوکوس textarea برای توقف polling
             document.querySelectorAll('.admin-reply-textarea').forEach(ta => {
                 ta.addEventListener('focus', stopPolling);
                 ta.addEventListener('blur', () => {
@@ -747,33 +1121,68 @@ function specsTextToJson(text) {
                         pollInterval = setInterval(renderTickets, 5000);
                     }
                 });
+                ta.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                        e.preventDefault();
+                        const btn = this.closest('.admin-reply-form').querySelector('.admin-reply-btn');
+                        if (btn) btn.click();
+                    }
+                });
             });
-        } catch (e) { console.error(e); }
+
+        } catch (e) {
+            console.error(e);
+            ticketsContainer.innerHTML = `
+                <div class="empty-state">
+                    <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+                    <h3>خطا در بارگذاری</h3>
+                    <p>لطفاً دوباره تلاش کنید.</p>
+                </div>
+            `;
+        }
     }
 
-    // ==================== پیام‌های تماس ====================
     async function loadContacts() {
         if (!messagesContainer) return;
         try {
             const messages = await adminApiFetch('/api/admin/contacts');
+            if (messageCount) messageCount.textContent = messages.length;
+
             if (!messages.length) {
-                messagesContainer.innerHTML = '<div class="empty-state">هیچ پیام تماسی ثبت نشده است.</div>';
+                messagesContainer.innerHTML = `
+                    <div class="empty-state">
+                        <svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+                        <h3>هیچ پیامی دریافت نشده است</h3>
+                        <p>پیام‌های کاربران در اینجا نمایش داده می‌شوند.</p>
+                    </div>
+                `;
                 return;
             }
+
             messagesContainer.innerHTML = messages.map(m => `
                 <div class="message-card">
                     <div class="message-header">
                         <div class="message-meta">
-                            <strong>${escapeHtml(m.name)}</strong>
-                            <span>${m.date}</span>
+                            <span class="sender-name">${escapeHtml(m.name)}</span>
+                            <span class="sender-email">
+                                <svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+                                ${escapeHtml(m.email)}
+                            </span>
+                            <span class="msg-date">
+                                <svg viewBox="0 0 24 24"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11z"/></svg>
+                                ${m.date}
+                            </span>
                         </div>
-                        <button class="delete-btn" data-id="${m.id}">حذف</button>
+                        <button class="delete-btn" data-id="${m.id}">
+                            <svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+                            حذف
+                        </button>
                     </div>
-                    <div>📧 ${escapeHtml(m.email)}</div>
-                    <div><strong>${escapeHtml(m.subject)}</strong></div>
-                    <div class="message-content">${escapeHtml(m.message)}</div>
+                    <div class="msg-subject">${escapeHtml(m.subject)}</div>
+                    <div class="msg-body">${escapeHtml(m.message)}</div>
                 </div>
             `).join('');
+
             document.querySelectorAll('.message-card .delete-btn').forEach(btn => {
                 btn.addEventListener('click', async function() {
                     if (await showConfirmModal('این پیام حذف شود؟')) {
@@ -782,65 +1191,96 @@ function specsTextToJson(text) {
                     }
                 });
             });
-        } catch (e) { console.error(e); }
+
+        } catch (e) {
+            console.error(e);
+        }
     }
 
-    // ==================== مدیریت محصولات ====================
     async function loadProducts() {
         if (!productsContainer) return;
         try {
-            const products = await apiFetch('/api/products');
+            const products = await fetch('/api/products').then(r => r.json());
+            if (productCount) productCount.textContent = products.length;
+
             if (!products.length) {
-                productsContainer.innerHTML = '<div class="empty-state">هیچ محصولی ثبت نشده است.</div>';
+                productsContainer.innerHTML = `
+                    <div class="empty-state">
+                        <svg viewBox="0 0 24 24"><path d="M20 6h-4V4c0-1.11-.89-2-2-2h-4c-1.11 0-2 .89-2 2v2H4c-1.11 0-1.99.89-1.99 2L2 19c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2zm-6 0h-4V4h4v2z"/></svg>
+                        <h3>هیچ محصولی ثبت نشده است</h3>
+                        <p>برای افزودن محصول جدید، دکمه "افزودن محصول جدید" را بزنید.</p>
+                    </div>
+                `;
                 return;
             }
+
             productsContainer.innerHTML = `
-                <table>
-                    <thead>
-                        <tr>
-                            <th>تصویر</th>
-                            <th>نام</th>
-                            <th>دسته</th>
-                            <th>قیمت</th>
-                            <th>عملیات</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        ${products.map(p => `
+                <div class="products-table-wrapper">
+                    <table>
+                        <thead>
                             <tr>
-                                <td><img src="/images/${p.image}" alt="${escapeHtml(p.name)}"></td>
-                                <td>${escapeHtml(p.name)}</td>
-                                <td>${p.category === 'coffee' ? 'قهوه' : 'کیک'}</td>
-                                <td class="price-cell">${p.price.toLocaleString()} تومان</td>
-                                <td>
-                                    <button class="edit-product-btn" data-id="${p.id}">✏️ ویرایش</button>
-                                    <button class="delete-product-btn" data-id="${p.id}">🗑️ حذف</button>
-                                </td>
+                                <th>تصویر</th>
+                                <th>نام</th>
+                                <th>دسته</th>
+                                <th>قیمت</th>
+                                <th>تخفیف</th>
+                                <th>عملیات</th>
                             </tr>
-                        `).join('')}
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            ${products.map(p => `
+                                <tr>
+                                    <td><img src="/images/${p.image}" alt="${escapeHtml(p.name)}"></td>
+                                    <td class="product-name-cell">${escapeHtml(p.name)}</td>
+                                    <td>${p.category === 'coffee' ? '☕ قهوه' : '🍰 کیک'}</td>
+                                    <td class="price-cell">${p.price.toLocaleString()} تومان</td>
+                                    <td>${p.discount > 0 ? p.discount + '%' : '—'}</td>
+                                    <td>
+                                        <div class="product-actions">
+                                            <button class="btn-sm btn-edit" data-id="${p.id}">
+                                                <svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+                                                ویرایش
+                                            </button>
+                                            <button class="btn-sm btn-delete" data-id="${p.id}">
+                                                <svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+                                                حذف
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
             `;
-            document.querySelectorAll('.edit-product-btn').forEach(btn => {
+
+            document.querySelectorAll('.btn-edit').forEach(btn => {
                 btn.addEventListener('click', () => openEditModal(btn.dataset.id));
             });
-            document.querySelectorAll('.delete-product-btn').forEach(btn => {
+            document.querySelectorAll('.btn-delete').forEach(btn => {
                 btn.addEventListener('click', () => deleteProduct(btn.dataset.id));
             });
-        } catch (e) { console.error(e); }
+
+        } catch (e) {
+            console.error(e);
+        }
     }
 
     addProductBtn?.addEventListener('click', () => {
         editingProductId = null;
-        productModalTitle.textContent = 'افزودن محصول جدید';
+        productModalTitle.innerHTML = `
+            <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+            افزودن محصول جدید
+        `;
         productForm.reset();
         document.getElementById('prodCategory').value = 'coffee';
-        productModal.style.display = 'flex';
+        document.getElementById('prodDiscount').value = '0';
+        document.getElementById('productModal').classList.add('show');
     });
 
     async function openEditModal(productId) {
         try {
-            const products = await apiFetch('/api/products');
+            const products = await fetch('/api/products').then(r => r.json());
             const product = products.find(p => p.id == productId);
             if (!product) return;
             editingProductId = productId;
@@ -851,27 +1291,23 @@ function specsTextToJson(text) {
             document.getElementById('prodDescription').value = product.description || '';
             document.getElementById('prodShortDesc').value = product.short_description || '';
             const specsTextarea = document.getElementById('prodSpecsText');
-                if (specsTextarea) {
-                    if (product.specs) {
-                        try {
-                            const specsObj = JSON.parse(product.specs);
-                            const lines = Object.entries(specsObj).map(([k, v]) => `${k}: ${v}`);
-                            specsTextarea.value = lines.join('\n');
-                        } catch (e) {
-                            specsTextarea.value = '';
-                        }
-                    } else {
-                        specsTextarea.value = '';
-                    }
-                }
+            if (specsTextarea && product.specs) {
+                try {
+                    const specsObj = JSON.parse(product.specs);
+                    specsTextarea.value = Object.entries(specsObj).map(([k, v]) => `${k}: ${v}`).join('\n');
+                } catch { specsTextarea.value = ''; }
+            }
             document.getElementById('prodDiscount').value = product.discount || 0;
-            productModalTitle.textContent = 'ویرایش محصول';
-            productModal.style.display = 'flex';
+            productModalTitle.innerHTML = `
+                <svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+                ویرایش محصول
+            `;
+            document.getElementById('productModal').classList.add('show');
         } catch (e) { console.error(e); }
     }
 
     cancelProductBtn?.addEventListener('click', () => {
-        productModal.style.display = 'none';
+        document.getElementById('productModal').classList.remove('show');
     });
 
     productForm?.addEventListener('submit', async (e) => {
@@ -889,22 +1325,20 @@ function specsTextToJson(text) {
         const imageFile = document.getElementById('prodImage').files[0];
         if (imageFile) formData.append('image', imageFile);
 
-        const url = editingProductId
-            ? `/api/admin/products/${editingProductId}`
-            : '/api/admin/products';
+        const url = editingProductId ? `/api/admin/products/${editingProductId}` : '/api/admin/products';
         const method = editingProductId ? 'PUT' : 'POST';
 
         try {
             const res = await fetch(url, {
                 method,
-                headers: { 'X-Admin-Token': sessionStorage.getItem('adminToken') },
+                headers: { 'X-Admin-Token': adminToken },
                 body: formData
             });
             const data = await res.json();
             if (data.success) {
-                productModal.style.display = 'none';
+                document.getElementById('productModal').classList.remove('show');
                 loadProducts();
-                showAlertModal(editingProductId ? 'محصول با موفقیت ویرایش شد.' : 'محصول جدید اضافه شد.');
+                showAlertModal(editingProductId ? '✅ محصول با موفقیت ویرایش شد.' : '✅ محصول جدید اضافه شد.');
             } else {
                 showAlertModal(data.error || 'خطا');
             }
@@ -915,20 +1349,12 @@ function specsTextToJson(text) {
         const sure = await showConfirmModal('آیا از حذف این محصول اطمینان دارید؟');
         if (!sure) return;
         try {
-            const res = await adminApiFetch(`/api/admin/products/${productId}`, { method: 'DELETE' });
-            if (res.success) {
-                loadProducts();
-                showAlertModal('محصول حذف شد.');
-            }
+            await adminApiFetch(`/api/admin/products/${productId}`, { method: 'DELETE' });
+            loadProducts();
+            showAlertModal('✅ محصول حذف شد.');
         } catch (e) { console.error(e); }
     }
 
-    const productsTabBtn = document.querySelector('.tab-btn[data-tab="products"]');
-    if (productsTabBtn) {
-        productsTabBtn.addEventListener('click', loadProducts);
-    }
-
-    // ==================== دکمه‌های عمومی ====================
     if (deleteAllTicketsBtn) {
         deleteAllTicketsBtn.addEventListener('click', async () => {
             if (await showConfirmModal('همه تیکت‌ها حذف شوند؟')) {
@@ -937,6 +1363,7 @@ function specsTextToJson(text) {
             }
         });
     }
+
     if (deleteAllMessagesBtn) {
         deleteAllMessagesBtn.addEventListener('click', async () => {
             if (await showConfirmModal('همه پیام‌های تماس حذف شوند؟')) {
@@ -945,6 +1372,7 @@ function specsTextToJson(text) {
             }
         });
     }
+
     if (logoutBtn) {
         logoutBtn.addEventListener('click', async () => {
             await adminApiFetch('/api/admin/logout', { method: 'POST' });
@@ -953,13 +1381,11 @@ function specsTextToJson(text) {
             window.location.href = '/home';
         });
     }
-    window.addEventListener('beforeunload', stopPolling);
 
-    // شروع اولیه
+    window.addEventListener('beforeunload', stopPolling);
     startPollingForActiveTab();
 })();
 
-// ======================== تماس با ما ========================
 const contactForm = document.getElementById('contactForm');
 const contactFormMessage = document.getElementById('formMessage');
 if (contactForm) {
@@ -983,7 +1409,6 @@ function showContactMessage(msg, type) {
     }
 }
 
-// ======================== فارسی‌سازی خودکار تمام اعداد ========================
 (function() {
     const persianDigits = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'];
 
@@ -991,14 +1416,12 @@ function showContactMessage(msg, type) {
         return text.replace(/[0-9]/g, d => persianDigits[d]);
     }
 
-    // تبدیل گره‌های متنی
     function convertTextNode(node) {
         if (node.nodeType === Node.TEXT_NODE && /\d/.test(node.textContent)) {
             node.textContent = toPersianNumber(node.textContent);
         }
     }
 
-    // تبدیل placeholderها
     function convertPlaceholder(el) {
         if (el.placeholder && /\d/.test(el.placeholder)) {
             el.placeholder = toPersianNumber(el.placeholder);
@@ -1008,7 +1431,6 @@ function showContactMessage(msg, type) {
         }
     }
 
-    // پیمایش کل DOM
     function walkDOM(root) {
         const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, null, false);
         let node;
@@ -1017,16 +1439,13 @@ function showContactMessage(msg, type) {
                 convertTextNode(node);
             }
         }
-        // تبدیل inputها و textareaها (placeholder)
         root.querySelectorAll?.('input, textarea').forEach(el => convertPlaceholder(el));
     }
 
-    // اجرای اولیه
     document.addEventListener('DOMContentLoaded', () => {
         walkDOM(document.body);
     });
 
-    // مشاهده تغییرات آینده (AJAX، بارگذاری پویا و ...)
     const observer = new MutationObserver(mutations => {
         mutations.forEach(mutation => {
             mutation.addedNodes.forEach(node => {
@@ -1046,7 +1465,6 @@ function showContactMessage(msg, type) {
     });
 })();
 
-// ======================== صفحات دسته‌بندی (قهوه / کیک) ========================
 async function loadCategoryPage(category, containerId) {
     const container = document.getElementById(containerId);
     if (!container) return;
@@ -1077,7 +1495,6 @@ async function loadCategoryPage(category, containerId) {
     }
 }
 
-// اجرا در صفحات مربوطه
 if (window.location.pathname.includes('/coffee')) {
     loadCategoryPage('coffee', 'coffeeContainer');
 }
