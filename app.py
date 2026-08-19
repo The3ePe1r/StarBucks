@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify, redirect, url_for, flash, send_from_directory, session
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.exc import IntegrityError
+from sqlalchemy.engine import URL
 from flask_login import (
     LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 )
@@ -12,10 +13,20 @@ import os
 import random
 import string
 import secrets
+import openai
 
 app = Flask(__name__, static_folder='static', static_url_path='/static')
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', secrets.token_urlsafe(32))
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///starbox.db')
+mysql_url = URL.create(
+    drivername="mysql+pymysql",
+    username=os.environ["MYSQL_USER"],
+    password=os.environ["MYSQL_PASSWORD"],
+    host=os.environ["MYSQL_HOST"],
+    port=int(os.environ.get("MYSQL_PORT", "3306")),
+    database=os.environ["MYSQL_DATABASE"],
+)
+
+app.config["SQLALCHEMY_DATABASE_URI"] = mysql_url
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['REMEMBER_COOKIE_HTTPONLY'] = True
 app.config['SESSION_COOKIE_HTTPONLY'] = True
@@ -24,6 +35,59 @@ app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
 db = SQLAlchemy(app)
 login_manager = LoginManager(app)
 login_manager.login_view = '/login'  # type: ignore
+
+
+# ======================== Agent هوش مصنوعی (GapGPT) ========================
+
+import openai
+import os
+
+@app.route('/api/chat', methods=['POST'])
+@login_required
+def api_chat():
+    data = request.get_json()
+    user_message = data.get('message', '').strip()
+    
+    if not user_message:
+        return jsonify(success=False, error='پیام را وارد کنید.'), 400
+    
+    try:
+        client = openai.OpenAI(
+            base_url="https://gapgpt.app/api/v1",  # آدرس API GapGPT
+            api_key="sk-h7th5JNRgGK4aOwdKsIp7ZRQmmDcM8BpaV2enoF42iM1rzUz"
+        )
+        
+        # اطلاعات محصولات
+        products = Product.query.limit(20).all()
+        product_list = "\n".join([f"- {p.name}: {p.price:,} تومان" for p in products])
+        
+        system_prompt = f"""تو یک دستیار هوش مصنوعی برای فروشگاه استارباکس هستی.
+
+محصولات موجود:
+{product_list}
+
+قوانین:
+1. فقط به سوالات درباره محصولات، قیمت‌ها، سفارش و پشتیبانی پاسخ بده.
+2. اگر سوال خارج از این موضوع بود، بگو: "من فقط در مورد محصولات و سفارشات فروشگاه می‌توانم کمک کنم."
+3. پاسخ‌ها را به فارسی و با ادب بده.
+4. پاسخ‌ها را مختصر و مفید بده (حداکثر ۳ پاراگراف)."""
+
+        response = client.chat.completions.create(
+            model="gpt-4o",  # یا هر مدلی که GapGPT پشتیبانی میکنه
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": user_message}
+            ],
+            max_tokens=500,
+            temperature=0.7
+        )
+        
+        reply = response.choices[0].message.content
+        return jsonify(success=True, reply=reply)
+        
+    except Exception as e:
+        return jsonify(success=False, error=str(e)), 500
+
 
 class User(UserMixin, db.Model):
     __tablename__ = 'users'

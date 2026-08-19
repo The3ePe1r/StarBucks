@@ -1501,3 +1501,91 @@ if (window.location.pathname.includes('/coffee')) {
 if (window.location.pathname.includes('/cake')) {
     loadCategoryPage('cake', 'cakeContainer');
 }
+
+// ======================== چت بات هوشمند ========================
+
+const chatToggle = document.getElementById('chatToggleBtn');
+const chatWindow = document.getElementById('chatWindow');
+const chatInput = document.getElementById('chatInput');
+const chatSend = document.getElementById('chatSendBtn');
+const chatMessages = document.getElementById('chatMessages');
+
+let isChatOpen = false;
+
+chatToggle?.addEventListener('click', function() {
+    isChatOpen = !isChatOpen;
+    chatWindow.style.display = isChatOpen ? 'flex' : 'none';
+    if (isChatOpen) chatInput.focus();
+});
+
+function closeChat() {
+    isChatOpen = false;
+    chatWindow.style.display = 'none';
+}
+
+async function sendMessage() {
+    const message = chatInput.value.trim();
+    if (!message) return;
+
+    addMessage(message, 'user');
+    chatInput.value = '';
+    chatInput.disabled = true;
+    chatSend.disabled = true;
+
+    const loading = addMessage('⏳ در حال تایپ...', 'bot');
+
+    try {
+        const response = await fetch('/api/chat', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ message: message })
+        });
+
+        const data = await response.json();
+        loading.remove();
+
+        if (data.success) {
+            addMessage(data.reply, 'bot');
+        } else {
+            addMessage('❌ ' + data.error, 'bot');
+        }
+    } catch (err) {
+        loading.remove();
+        addMessage('❌ خطا در ارتباط با سرور', 'bot');
+    }
+
+    chatInput.disabled = false;
+    chatSend.disabled = false;
+    chatInput.focus();
+}
+
+function addMessage(text, sender) {
+    const div = document.createElement('div');
+    div.style.cssText = `
+        background: ${sender === 'user' ? '#1E3A34' : 'white'};
+        color: ${sender === 'user' ? 'white' : '#333'};
+        padding: 12px 16px;
+        border-radius: 14px;
+        max-width: 85%;
+        margin-bottom: 12px;
+        ${sender === 'user' ? 'margin-right: auto;' : 'border-right: 3px solid #1E3A34;'}
+        box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        word-wrap: break-word;
+        white-space: pre-wrap;
+        font-size: 14px;
+        line-height: 1.7;
+        align-self: ${sender === 'user' ? 'flex-end' : 'flex-start'};
+    `;
+    div.textContent = text;
+    chatMessages.appendChild(div);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+    return div;
+}
+
+chatSend?.addEventListener('click', sendMessage);
+chatInput?.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        sendMessage();
+    }
+});

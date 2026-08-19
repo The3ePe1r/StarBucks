@@ -140,6 +140,31 @@
     </div>
 </div>
 
+<!-- ======================== چت بات هوشمند ======================== -->
+<div id="chatFloat" style="position:fixed; bottom:25px; right:25px; z-index:9999; display:flex; flex-direction:column; align-items:flex-end;">
+    <div id="chatWindow" style="display:none; width:380px; height:520px; background:white; border-radius:20px; box-shadow:0 10px 50px rgba(0,0,0,0.2); margin-bottom:12px; overflow:hidden; flex-direction:column; border:1px solid #f0e8d8;">
+        <div style="background:#1E3A34; color:white; padding:16px 20px; display:flex; justify-content:space-between; align-items:center;">
+            <div style="display:flex; align-items:center; gap:10px;">
+                <span style="font-size:20px;">🤖</span>
+                <span style="font-weight:bold;">پشتیبانی هوشمند</span>
+            </div>
+            <button onclick="closeChat()" style="background:none; border:none; color:white; font-size:22px; cursor:pointer;">✕</button>
+        </div>
+        <div id="chatMessages" style="flex:1; overflow-y:auto; padding:18px 20px; background:#faf8f5;">
+            <div style="background:white; padding:12px 16px; border-radius:14px; max-width:85%; margin-bottom:12px; box-shadow:0 2px 8px rgba(0,0,0,0.04); border-right:3px solid #1E3A34;">
+                👋 سلام! به استارباکس خوش آمدید. سوالی درباره محصولات یا سفارش دارید؟
+            </div>
+        </div>
+        <div style="padding:14px 18px; border-top:1px solid #f0e8d8; display:flex; gap:10px; background:white;">
+            <input id="chatInput" type="text" placeholder="سوال خود را بپرسید..." style="flex:1; padding:10px 16px; border:2px solid #e8ddd0; border-radius:12px; font-family:inherit; font-size:14px; background:#faf8f5;">
+            <button id="chatSendBtn" style="background:#1E3A34; color:white; border:none; border-radius:12px; padding:10px 22px; font-weight:bold; cursor:pointer; transition:0.3s;">ارسال</button>
+        </div>
+    </div>
+    <button id="chatToggleBtn" style="background:#1E3A34; color:white; border:none; border-radius:50px; padding:14px 24px; font-weight:bold; cursor:pointer; box-shadow:0 5px 25px rgba(0,0,0,0.2); display:flex; align-items:center; gap:10px; font-size:15px; transition:0.3s;">
+        💬 پشتیبانی هوشمند
+    </button>
+</div>
+
 <footer class="footer">
     <div class="footer-content">
         <div class="footer-logo">
