@@ -493,7 +493,6 @@ def api_contact():
     return jsonify(success=True, message='پیام شما با موفقیت ارسال شد.')
 
 ADMIN_PANEL_PASSWORD = '123456'
-admin_tokens = set()
 UPLOAD_FOLDER = os.path.join(app.static_folder, 'images') # type: ignore
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'webp'}
 
@@ -515,8 +514,7 @@ def product_to_dict(p):
     }
 
 def admin_required():
-    token = request.headers.get('X-Admin-Token', '')
-    if token not in admin_tokens:
+    if not session.get('admin_authenticated'):
         return jsonify(success=False, error='دسترسی غیرمجاز'), 403
     return None
 
@@ -525,16 +523,13 @@ def api_admin_login():
     data = request.get_json()
     password = data.get('password', '')
     if password == ADMIN_PANEL_PASSWORD:
-        token = secrets.token_hex(32)
-        admin_tokens.add(token)
-        return jsonify(success=True, token=token)
+        session['admin_authenticated'] = True
+        return jsonify(success=True, token='session')
     return jsonify(success=False), 401
 
 @app.route('/api/admin/logout', methods=['POST'])
 def api_admin_logout():
-    token = request.headers.get('X-Admin-Token', '')
-    if token in admin_tokens:
-        admin_tokens.remove(token)
+    session.pop('admin_authenticated', None)
     return jsonify(success=True)
 
 @app.route('/api/admin/tickets')
