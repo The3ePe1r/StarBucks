@@ -169,7 +169,7 @@ def serve_css(filename):
 
 @app.route('/js/<path:filename>')
 def serve_js(filename):
-    return send_from_directory(os.path.join(app.static_folder, 'js'), filename) # type: ignore
+    return send_from_directory(os.path.join(app.static_folder, 'JS'), filename) # type: ignore
 
 @app.route('/images/<path:filename>')
 def serve_images(filename):
