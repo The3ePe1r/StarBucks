@@ -292,6 +292,7 @@ if (window.location.pathname.includes('/product/')) {
             }
 
             if (buyBtn) {
+                buyBtn.setAttribute('data-product-id', product.id);
                 buyBtn.setAttribute('data-product-name', product.name);
                 buyBtn.setAttribute('data-product-price', toPersianPrice(finalPrice) + ' تومان');
             }
@@ -370,13 +371,13 @@ if (window.location.pathname.includes('/product/')) {
                 const buyBtn = e.target.closest('#buyButton');
                 if (!buyBtn) return;
                 e.preventDefault();
-                const name = buyBtn.getAttribute('data-product-name');
-                const price = buyBtn.getAttribute('data-product-price');
-                if (!name || !price) return;
+                const productId = buyBtn.getAttribute('data-product-id');
+                if (!productId) return;
                 const res = await fetch('/api/add_to_cart', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ product_name: name, price: price })
+                    credentials: 'include',
+                    body: JSON.stringify({ product_id: Number(productId) })
                 });
                 const data = await res.json();
                 if (data.success) {

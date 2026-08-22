@@ -362,7 +362,7 @@ def api_add_to_cart():
     order = Order(user_id=current_user.id, product_name=product.name, price=str(product.price)) # type: ignore
     db.session.add(order)
     db.session.commit()
-    return jsonify(success=True, message=f'{product_name} به سبد خرید اضافه شد.') # type: ignore
+    return jsonify(success=True, message=f'{product.name} به سبد خرید اضافه شد.')
 
 @app.route('/api/orders')
 @login_required
