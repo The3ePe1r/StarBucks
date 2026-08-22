@@ -522,6 +522,31 @@ if (window.location.pathname.includes('/customer')) {
             pollInterval = setInterval(loadTickets, 5000);
         }
 
+        function captureReplyDrafts() {
+            const drafts = {};
+            container.querySelectorAll('.reply-textarea').forEach(textarea => {
+                drafts[textarea.id] = {
+                    value: textarea.value,
+                    selectionStart: textarea.selectionStart,
+                    selectionEnd: textarea.selectionEnd,
+                    focused: document.activeElement === textarea
+                };
+            });
+            return drafts;
+        }
+
+        function restoreReplyDrafts(drafts) {
+            Object.entries(drafts).forEach(([id, draft]) => {
+                const textarea = document.getElementById(id);
+                if (!textarea) return;
+                textarea.value = draft.value;
+                if (draft.focused) {
+                    textarea.focus({ preventScroll: true });
+                    textarea.setSelectionRange(draft.selectionStart, draft.selectionEnd);
+                }
+            });
+        }
+
         function showMessage(el, text, type) {
             el.textContent = text;
             el.className = 'form-message-customer ' + type;
@@ -610,6 +635,7 @@ if (window.location.pathname.includes('/customer')) {
 
         async function loadTickets() {
             if (!container) return;
+            const replyDrafts = captureReplyDrafts();
             try {
                 const response = await fetch('/api/tickets', { credentials: 'include' });
                 if (response.status === 401) {
@@ -711,10 +737,9 @@ if (window.location.pathname.includes('/customer')) {
                     `;
                 }).join('');
 
+                restoreReplyDrafts(replyDrafts);
+
                 document.querySelectorAll('.reply-textarea').forEach(ta => {
-                    ta.addEventListener('focus', stopPolling);
-                    ta.addEventListener('blur', () => startPolling());
-                    
                     ta.addEventListener('keydown', function(e) {
                         if (e.key === 'Enter' && !e.shiftKey) {
                             e.preventDefault();
@@ -947,6 +972,31 @@ function specsTextToJson(text) {
     const productsContainer = document.getElementById('productsContainer');
     const logoutBtn = document.getElementById('logoutBtn');
     const deleteAllTicketsBtn = document.getElementById('deleteAllTicketsBtn');
+
+    function captureAdminReplyDrafts() {
+        const drafts = {};
+        ticketsContainer.querySelectorAll('.admin-reply-textarea').forEach(textarea => {
+            drafts[textarea.id] = {
+                value: textarea.value,
+                selectionStart: textarea.selectionStart,
+                selectionEnd: textarea.selectionEnd,
+                focused: document.activeElement === textarea
+            };
+        });
+        return drafts;
+    }
+
+    function restoreAdminReplyDrafts(drafts) {
+        Object.entries(drafts).forEach(([id, draft]) => {
+            const textarea = document.getElementById(id);
+            if (!textarea) return;
+            textarea.value = draft.value;
+            if (draft.focused) {
+                textarea.focus({ preventScroll: true });
+                textarea.setSelectionRange(draft.selectionStart, draft.selectionEnd);
+            }
+        });
+    }
     const deleteAllMessagesBtn = document.getElementById('deleteAllMessagesBtn');
     const addProductBtn = document.getElementById('addProductBtn');
     const productModal = document.getElementById('productModal');
@@ -1009,6 +1059,7 @@ function specsTextToJson(text) {
 
     async function renderTickets() {
         if (!ticketsContainer) return;
+        const replyDrafts = captureAdminReplyDrafts();
         try {
             const tickets = await adminApiFetch('/api/admin/tickets');
             if (ticketCount) ticketCount.textContent = tickets.length;
@@ -1084,6 +1135,8 @@ function specsTextToJson(text) {
                 </div>
             `).join('');
 
+            restoreAdminReplyDrafts(replyDrafts);
+
             document.querySelectorAll('.status-select').forEach(select => {
                 select.addEventListener('change', async function() {
                     await adminApiFetch(`/api/admin/update_status/${this.dataset.id}`, {
@@ -1115,13 +1168,6 @@ function specsTextToJson(text) {
             });
 
             document.querySelectorAll('.admin-reply-textarea').forEach(ta => {
-                ta.addEventListener('focus', stopPolling);
-                ta.addEventListener('blur', () => {
-                    if (document.querySelector('.tab-btn[data-tab="tickets"].active') && !isAnyTextareaFocused()) {
-                        stopPolling();
-                        pollInterval = setInterval(renderTickets, 5000);
-                    }
-                });
                 ta.addEventListener('keydown', function(e) {
                     if (e.key === 'Enter' && !e.shiftKey) {
                         e.preventDefault();
