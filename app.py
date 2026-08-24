@@ -348,6 +348,53 @@ def api_product_detail(product_id):
         } for r in reviews]
     })
 
+
+
+
+# ======================== سفارشات ادمین ========================
+
+@app.route('/api/admin/orders')
+def api_admin_orders():
+    if (error := admin_required()): return error
+    orders = Order.query.order_by(Order.created_at.desc()).all()
+    result = []
+    for o in orders:
+        user = User.query.get(o.user_id)
+        result.append({
+            'id': o.id,
+            'product_name': o.product_name,
+            'price': o.price,
+            'status': o.status,
+            'date': o.created_at.strftime('%Y/%m/%d %H:%M'),
+            'user_name': user.name if user else 'حذف‌شده',
+            'user_email': user.email if user else '-'
+        })
+    return jsonify(result)
+
+
+@app.route('/api/admin/orders/<int:order_id>/status', methods=['POST'])
+def api_admin_update_order_status(order_id):
+    if (error := admin_required()): return error
+    order = Order.query.get_or_404(order_id)
+    data = request.get_json()
+    new_status = data.get('status', '').strip()
+    allowed = ['در حال پردازش', 'در حال آماده‌سازی', 'ارسال شده', 'تحویل داده شده', 'لغو شده']
+    if new_status not in allowed:
+        return jsonify(success=False, error='وضعیت نامعتبر'), 400
+    order.status = new_status
+    db.session.commit()
+    return jsonify(success=True, message='وضعیت سفارش به‌روزرسانی شد.')
+
+
+@app.route('/api/admin/orders/<int:order_id>', methods=['DELETE'])
+def api_admin_delete_order(order_id):
+    if (error := admin_required()): return error
+    order = Order.query.get_or_404(order_id)
+    db.session.delete(order)
+    db.session.commit()
+    return jsonify(success=True, message='سفارش حذف شد.')
+
+
 @app.route('/api/add_to_cart', methods=['POST'])
 @login_required
 def api_add_to_cart():

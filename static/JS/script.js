@@ -1565,6 +1565,109 @@ chatToggle?.addEventListener('click', function() {
     if (isChatOpen) chatInput.focus();
 });
 
+
+// وقتی تب عوض می‌شه
+document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById(btn.dataset.tab + 'Tab').classList.add('active');
+
+        if (btn.dataset.tab === 'orders') loadOrders();
+        // بقیه تب‌ها رو هم مثل قبل نگه دار
+    });
+});
+
+async function loadOrders() {
+    const container = document.getElementById('ordersContainer');
+    container.innerHTML = '<div class="empty-state"><p>در حال بارگذاری...</p></div>';
+
+    try {
+        const res = await fetch('/api/admin/orders');
+        if (!res.ok) throw new Error('خطا در دریافت سفارشات');
+        const orders = await res.json();
+
+        document.getElementById('orderCount').textContent = orders.length;
+
+        if (orders.length === 0) {
+            container.innerHTML = `
+                <div class="empty-state">
+                    <h3>هنوز سفارشی ثبت نشده</h3>
+                    <p>وقتی کاربران محصولی به سبد اضافه کنند، اینجا نمایش داده می‌شود.</p>
+                </div>`;
+            return;
+        }
+
+        container.innerHTML = `
+            <div class="products-table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>محصول</th>
+                            <th>قیمت</th>
+                            <th>کاربر</th>
+                            <th>ایمیل</th>
+                            <th>تاریخ</th>
+                            <th>وضعیت</th>
+                            <th>عملیات</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${orders.map(o => `
+                            <tr>
+                                <td>${o.id}</td>
+                                <td class="product-name-cell">${o.product_name}</td>
+                                <td class="price-cell">${Number(o.price).toLocaleString('fa-IR')} تومان</td>
+                                <td>${o.user_name}</td>
+                                <td>${o.user_email}</td>
+                                <td>${o.date}</td>
+                                <td>
+                                    <select class="status-select" data-id="${o.id}" onchange="updateOrderStatus(${o.id}, this.value)">
+                                        ${['در حال پردازش', 'در حال آماده‌سازی', 'ارسال شده', 'تحویل داده شده', 'لغو شده']
+                                            .map(s => `<option value="${s}" ${o.status === s ? 'selected' : ''}>${s}</option>`).join('')}
+                                    </select>
+                                </td>
+                                <td>
+                                    <button class="btn-sm btn-delete" onclick="deleteOrder(${o.id})">حذف</button>
+                                </td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            </div>`;
+    } catch (err) {
+        container.innerHTML = `<div class="empty-state"><p style="color:#e74c3c">${err.message}</p></div>`;
+    }
+}
+
+async function updateOrderStatus(id, status) {
+    try {
+        const res = await fetch(`/api/admin/orders/${id}/status`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ status })
+        });
+        const data = await res.json();
+        if (!data.success) alert(data.error || 'خطا');
+    } catch (e) {
+        alert('خطا در به‌روزرسانی وضعیت');
+    }
+}
+
+async function deleteOrder(id) {
+    if (!confirm('آیا از حذف این سفارش مطمئن هستید؟')) return;
+    try {
+        const res = await fetch(`/api/admin/orders/${id}`, { method: 'DELETE' });
+        const data = await res.json();
+        if (data.success) loadOrders();
+        else alert(data.error || 'خطا');
+    } catch (e) {
+        alert('خطا در حذف سفارش');
+    }
+}
+
 function closeChat() {
     isChatOpen = false;
     chatWindow.style.display = 'none';
