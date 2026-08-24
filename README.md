@@ -86,7 +86,7 @@ Visit `/admin` and enter the password `123456` (configurable in `app.py`).
 
 ## 🚀 Live Demo
 
-Check out the live site: [Website Demo](https://starbucks-z08i.onrender.com)
+Check out the live site: [Website Demo](https://starbucks-cyan-eta.vercel.app/)
 
 ---
 
