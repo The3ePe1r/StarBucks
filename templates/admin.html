@@ -820,6 +820,30 @@
             from { transform: scale(0.9) translateY(-20px); opacity: 0; }
             to { transform: scale(1) translateY(0); opacity: 1; }
         }
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: #1E3A34;
+            color: white;
+            padding: 14px 28px;
+            border-radius: 14px;
+            font-size: 15px;
+            font-weight: 600;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+            z-index: 99999;
+            opacity: 0;
+            transition: all 0.35s ease;
+            max-width: 90%;
+            text-align: center;
+            direction: rtl;
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
 
         .modal-box h2 {
             font-family: 'Digi Almas', 'Vazir', sans-serif;

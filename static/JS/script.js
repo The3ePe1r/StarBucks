@@ -39,7 +39,25 @@ function showConfirmModal(message) {
     });
 }
 
-function showAlertModal(message) {
+
+function showToast(message, duration = 3000) {
+    const old = document.querySelector('.toast');
+    if (old) old.remove();
+
+    const toast = document.createElement('div');
+    toast.className = 'toast';
+    toast.textContent = message;
+    document.body.appendChild(toast);
+
+    setTimeout(() => toast.classList.add('show'), 10);
+
+    setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => toast.remove(), 350);
+    }, duration);
+}
+
+function showToast(message) {
     return new Promise((resolve) => {
         const msgEl = document.getElementById('alertModalMessage');
         if (msgEl) msgEl.textContent = message;
@@ -71,7 +89,7 @@ function showPasswordPrompt(message) {
         };
         const onSubmit = () => {
             const password = input.value.trim();
-            if (!password) { showAlertModal('لطفاً رمز عبور را وارد کنید').then(() => input.focus()); return; }
+            if (!password) { showToast('لطفاً رمز عبور را وارد کنید').then(() => input.focus()); return; }
             cleanup();
             resolve(password);
         };
@@ -153,16 +171,18 @@ document.addEventListener('DOMContentLoaded', () => {
             const email = document.getElementById('signupEmail').value.trim();
             const password = document.getElementById('signupPassword').value;
             const confirm = document.getElementById('signupConfirmPassword').value;
-            if (!name || !email || !password || !confirm) return showAlertModal('لطفاً تمام فیلدها را پر کنید.');
-            if (password !== confirm) return showAlertModal('رمز عبور و تکرار آن مطابقت ندارند!');
-            if (password.length < 5) return showAlertModal('رمز عبور باید حداقل ۵ حرف باشد.');
+            if (!name || !email || !password || !confirm) return showToast('لطفاً تمام فیلدها را پر کنید.');
+            if (password !== confirm) return showToast('رمز عبور و تکرار آن مطابقت ندارند!');
+            if (password.length < 5) return showToast('رمز عبور باید حداقل ۵ حرف باشد.');
             const data = await apiFetch('/api/signup', { method: 'POST', body: JSON.stringify({ name, email, password, confirm_password: confirm }) });
             if (data.success) {
-                await showAlertModal('ثبت‌نام با موفقیت انجام شد! حالا وارد شوید.');
+                await showToast('ثبت‌نام با موفقیت انجام شد! حالا وارد شوید.');
                 // محصول رو نگه می‌داریم تا بعد از لاگین ثبت بشه
-                window.location.href = '/login';
+                setTimeout(() => {
+                    window.location.href = '/login';
+                }, 1800);
             }
-            else await showAlertModal(data.error || 'خطا در ثبت‌نام');
+            else await showToast(data.error || 'خطا در ثبت‌نام');
         });
     }
 
@@ -192,8 +212,10 @@ document.addEventListener('DOMContentLoaded', () => {
                             });
                             const cartData = await cartRes.json();
                             if (cartData.success) {
-                                await showAlertModal('محصول مورد نظر شما با موفقیت به سبد اضافه شد.');
-                                window.location.href = '/account';
+                                await showToast('محصول مورد نظر شما با موفقیت به سبد اضافه شد.');
+                                setTimeout(() => {
+                                    window.location.href = '/account';
+                                }, 1800);
                                 return;
                             }
                         } catch (e) {}
@@ -410,22 +432,28 @@ if (window.location.pathname.includes('/product/')) {
 
                     if (res.status === 401 || res.redirected || res.status === 302) {
                         localStorage.setItem('pendingProductId', productId);
-                        await showAlertModal('شما وارد حساب کاربری خود نشده‌اید. لطفاً ابتدا وارد شوید.');
-                        window.location.href = '/login';
+                        showToast('شما وارد حساب کاربری خود نشده‌اید. لطفاً ابتدا وارد شوید.');
+                        setTimeout(() => {
+                            window.location.href = '/login';
+                        }, 1800);
                         return;
                     }
 
                     const data = await res.json();
                     if (data.success) {
-                        await showAlertModal(data.message);
-                        window.location.href = '/account';
+                        await showToast(data.message);
+                        setTimeout(() => {
+                            window.location.href = '/account';
+                        }, 1800);
                     } else {
-                        await showAlertModal(data.error || 'خطا در افزودن به سبد');
+                        await showToast(data.error || 'خطا در افزودن به سبد');
                     }
                 } catch (err) {
                     localStorage.setItem('pendingProductId', productId);
-                    await showAlertModal('شما وارد حساب کاربری خود نشده‌اید. لطفاً ابتدا وارد شوید.');
-                    window.location.href = '/login';
+                    showToast('شما وارد حساب کاربری خود نشده‌اید. لطفاً ابتدا وارد شوید.');
+                    setTimeout(() => {
+                        window.location.href = '/login';
+                    }, 1800);
                 }
             });
 
@@ -477,10 +505,10 @@ if (window.location.pathname.includes('/account')) {
                 const current = document.getElementById('currentPassword').value.trim();
                 const newPass = document.getElementById('newPassword').value.trim();
                 const confirm = document.getElementById('confirmNewPassword').value.trim();
-                if (!current || !newPass || !confirm) return showAlertModal('همه فیلدها را پر کنید.');
+                if (!current || !newPass || !confirm) return showToast('همه فیلدها را پر کنید.');
                 const res = await apiFetch('/api/change_password', { method: 'POST', body: JSON.stringify({ current_password: current, new_password: newPass, confirm_password: confirm }) });
-                if (res.success) { await showAlertModal('رمز عبور با موفقیت تغییر کرد!'); changePasswordForm.reset(); }
-                else await showAlertModal(res.error || 'خطا');
+                if (res.success) { await showToast('رمز عبور با موفقیت تغییر کرد!'); changePasswordForm.reset(); }
+                else await showToast(res.error || 'خطا');
             });
         }
 
@@ -796,7 +824,7 @@ if (window.location.pathname.includes('/customer')) {
                         const ta = document.getElementById(`reply-${tid}`);
                         if (!ta) return;
                         const text = ta.value.trim();
-                        if (!text) return showAlertModal('پاسخ نمی‌تواند خالی باشد.');
+                        if (!text) return showToast('پاسخ نمی‌تواند خالی باشد.');
                         
                         this.disabled = true;
                         this.innerHTML = `
@@ -823,10 +851,10 @@ if (window.location.pathname.includes('/customer')) {
                                 await loadTickets();
                                 startPolling();
                             } else {
-                                showAlertModal(res.error || 'خطا');
+                             showToast(res.error || 'خطا');
                             }
                         } catch (err) {
-                            showAlertModal('خطا در ارتباط با سرور');
+                         showToast('خطا در ارتباط با سرور');
                         } finally {
                             this.disabled = false;
                             this.innerHTML = `
@@ -984,8 +1012,10 @@ function specsTextToJson(text) {
         });
         const data = await res.json();
         if (!data.success || !data.token) {
-            await showAlertModal('رمز اشتباه!');
-            window.location.href = '/home';
+            await showToast('رمز اشتباه!');
+            setTimeout(() => {
+                window.location.href = '/home';
+            }, 2000);
             return;
         }
         adminToken = data.token;
@@ -1001,8 +1031,10 @@ function specsTextToJson(text) {
         });
         if (res.status === 403) {
             sessionStorage.removeItem('adminToken');
-            await showAlertModal('نشست شما منقضی شده است. لطفاً دوباره وارد شوید.');
-            window.location.href = '/admin';
+            await showToast('نشست شما منقضی شده است. لطفاً دوباره وارد شوید.');
+            setTimeout(() => {
+                window.location.href = '/admin';
+            }, 2000);
             throw new Error('Token expired');
         }
         return res.json();
@@ -1193,7 +1225,7 @@ function specsTextToJson(text) {
                     const ta = document.getElementById(`admin-reply-${this.dataset.id}`);
                     if (!ta) return;
                     const text = ta.value.trim();
-                    if (!text) return showAlertModal('پاسخ نمی‌تواند خالی باشد.');
+                    if (!text) return showToast('پاسخ نمی‌تواند خالی باشد.');
 
                     this.disabled = true;
                     this.innerHTML = '<svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm1-13h-2v6l5.25 3.15L17 12.23l-4-2.37V7z"/></svg> در حال ارسال...';
@@ -1425,9 +1457,9 @@ function specsTextToJson(text) {
             if (data.success) {
                 document.getElementById('productModal').classList.remove('show');
                 loadProducts();
-                showAlertModal(editingProductId ? '✅ محصول با موفقیت ویرایش شد.' : '✅ محصول جدید اضافه شد.');
+             showToast(editingProductId ? '✅ محصول با موفقیت ویرایش شد.' : '✅ محصول جدید اضافه شد.');
             } else {
-                showAlertModal(data.error || 'خطا');
+             showToast(data.error || 'خطا');
             }
         } catch (err) { console.error(err); }
     });
@@ -1438,7 +1470,7 @@ function specsTextToJson(text) {
         try {
             await adminApiFetch(`/api/admin/products/${productId}`, { method: 'DELETE' });
             loadProducts();
-            showAlertModal('✅ محصول حذف شد.');
+         showToast('✅ محصول حذف شد.');
         } catch (e) { console.error(e); }
     }
 
