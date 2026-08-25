@@ -157,7 +157,11 @@ document.addEventListener('DOMContentLoaded', () => {
             if (password !== confirm) return showAlertModal('رمز عبور و تکرار آن مطابقت ندارند!');
             if (password.length < 5) return showAlertModal('رمز عبور باید حداقل ۵ حرف باشد.');
             const data = await apiFetch('/api/signup', { method: 'POST', body: JSON.stringify({ name, email, password, confirm_password: confirm }) });
-            if (data.success) { await showAlertModal('ثبت‌نام با موفقیت انجام شد!'); window.location.href = '/login'; }
+            if (data.success) {
+                await showAlertModal('ثبت‌نام با موفقیت انجام شد! حالا وارد شوید.');
+                // محصول رو نگه می‌داریم تا بعد از لاگین ثبت بشه
+                window.location.href = '/login';
+            }
             else await showAlertModal(data.error || 'خطا در ثبت‌نام');
         });
     }
@@ -174,7 +178,28 @@ document.addEventListener('DOMContentLoaded', () => {
             try {
                 const res = await fetch('/api/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, password, remember }) });
                 const data = await res.json();
-                if (res.ok && data.success) window.location.href = '/home';
+                if (res.ok && data.success) {
+                    // چک کردن محصول در انتظار
+                    const pendingId = localStorage.getItem('pendingProductId');
+                    if (pendingId) {
+                        localStorage.removeItem('pendingProductId');
+                        try {
+                            const cartRes = await fetch('/api/add_to_cart', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                credentials: 'include',
+                                body: JSON.stringify({ product_id: Number(pendingId) })
+                            });
+                            const cartData = await cartRes.json();
+                            if (cartData.success) {
+                                await showAlertModal('محصول مورد نظر شما با موفقیت به سبد اضافه شد.');
+                                window.location.href = '/account';
+                                return;
+                            }
+                        } catch (e) {}
+                    }
+                    window.location.href = '/home';
+                }
                 else { if (loginError) { loginError.textContent = data.error || 'ایمیل یا رمز عبور اشتباه است.'; loginError.style.display = 'block'; } }
             } catch (err) { if (loginError) { loginError.textContent = 'خطا در برقراری ارتباط با سرور'; loginError.style.display = 'block'; } }
         });
@@ -371,20 +396,36 @@ if (window.location.pathname.includes('/product/')) {
                 const buyBtn = e.target.closest('#buyButton');
                 if (!buyBtn) return;
                 e.preventDefault();
+
                 const productId = buyBtn.getAttribute('data-product-id');
                 if (!productId) return;
-                const res = await fetch('/api/add_to_cart', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    credentials: 'include',
-                    body: JSON.stringify({ product_id: Number(productId) })
-                });
-                const data = await res.json();
-                if (data.success) {
-                    await showAlertModal(data.message);
-                    window.location.href = '/account';
-                } else {
-                    await showAlertModal(data.error || 'خطا');
+
+                try {
+                    const res = await fetch('/api/add_to_cart', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        credentials: 'include',
+                        body: JSON.stringify({ product_id: Number(productId) })
+                    });
+
+                    if (res.status === 401 || res.redirected || res.status === 302) {
+                        localStorage.setItem('pendingProductId', productId);
+                        await showAlertModal('شما وارد حساب کاربری خود نشده‌اید. لطفاً ابتدا وارد شوید.');
+                        window.location.href = '/login';
+                        return;
+                    }
+
+                    const data = await res.json();
+                    if (data.success) {
+                        await showAlertModal(data.message);
+                        window.location.href = '/account';
+                    } else {
+                        await showAlertModal(data.error || 'خطا در افزودن به سبد');
+                    }
+                } catch (err) {
+                    localStorage.setItem('pendingProductId', productId);
+                    await showAlertModal('شما وارد حساب کاربری خود نشده‌اید. لطفاً ابتدا وارد شوید.');
+                    window.location.href = '/login';
                 }
             });
 
